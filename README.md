@@ -2,6 +2,45 @@
 	 	         &
 		  Belén Solla Sanz
 
+		-- E N G L I S H --
+
+	⚝ ⚝ ⚝  K A R B O N  S T U D I O  ⚝ ⚝ ⚝
+	⚝	     - presents -	 	 ⚝
+	⚝	   Old Super Kirby 18		 ⚝
+	⚝ 				 	 ⚝
+	⚝     With this New Retro version of  	 ⚝
+	⚝  the classic Kirby franchise, we're	 ⚝
+	⚝   set on joining together the newest	 ⚝
+	⚝ game mechanichs, along with those we 	 ⚝
+	⚝  already know and love. That way, we 	 ⚝
+	⚝ will achieve a simple, nostalgic game	 ⚝
+	⚝  perfect for sharing with our parents	 ⚝
+	⚝	as well as our younger family. 	 ⚝
+	⚝				 	 ⚝
+	⚝  To accomplish that goal, we will use	 ⚝
+	⚝   16bits-Era graphics, mixed up with	 ⚝
+	⚝  modern design and tropes, as well as	 ⚝
+	⚝  mechanics from other big franchises	 ⚝
+	⚝   like Super Mario. That way, there	 ⚝
+	⚝  might be locked areas that can only	 ⚝
+	⚝   be cleared if you have a certain	 ⚝
+	⚝  number of stars. Or maybe some areas	 ⚝
+	⚝  to spend coins in, in exchange for a	 ⚝
+	⚝  health power-up. All of this while,	 ⚝
+	⚝  of course, Kirby swallows and steals	 ⚝
+	⚝   abilities from unknowing enemies. 	 ⚝
+	⚝				 	 ⚝ 
+	⚝  So... get ready to re-live the Kirby	 ⚝
+	⚝  experience like nothing you've ever	 ⚝
+	⚝	      imagined before!	 	 ⚝
+	⚝				 	 ⚝
+	⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝ ⚝
+
+    Coming to your browser this winter
+
+
+
+		-- E S P A Ñ O L --
 
 	⚝ ⚝ ⚝  K A R B O N  S T U D I O  ⚝ ⚝ ⚝
 	⚝	     - presenta -	 	 ⚝
