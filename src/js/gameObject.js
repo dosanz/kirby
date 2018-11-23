@@ -8,3 +8,6 @@ function GameObject(game, x, y, spriteName) {
 
 GameObject.prototype = Object.create(Phaser.Sprite.prototype);
 GameObject.prototype.constructor = GameObject;
+
+
+module.exports = GameObject;

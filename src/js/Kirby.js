@@ -1,12 +1,15 @@
 'use strict';
 
+var GameObject = require('./gameObject');
+var Character = require('./character');
+
 // const powerup = ['normal', 'fire', 'thunder']; // casi seguro que no vale
 const NORMAL = 'normal';
 const FIRE = 'fire';
 const THUNDER = 'thunder';
 
-function Kirby(game, x, y) {
-	Character.apply(this, [game, x, y, 'kirby']);
+var Kirby = function (game, x, y) {
+	Character.call(this, game, x, y, 'kirby');
 	this.movementSpeed = 8;
 	this.jumpHeight = 8;
 	this.empty = true;
@@ -35,6 +38,10 @@ Kirby.prototype.jump = function () {
 Kirby.prototype.attack = function () {
 	console.log('bium');
 }
+
+
+
+module.exports = Kirby;
 
 // class Kirby extends Character {
 // 	constructor(game, x, y) {

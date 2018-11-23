@@ -23,17 +23,18 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
-    this.game.load.image('kirby', 'images/kirby.png');
+    this.game.load.image('kirby', 'images/kirbyBasicMovement.png');
   },
 
   create: function () {
+    //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.state.start('play');
   }
 };
 
 
 window.onload = function () {
-  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+  var game = new Phaser.Game(256, 240, Phaser.AUTO, 'game');
 
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
