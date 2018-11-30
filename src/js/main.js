@@ -23,7 +23,7 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
-    this.game.load.image('kirby', 'images/kirbyBasicMovement.png');
+    this.game.load.spritesheet('kirby', 'images/kirbyBasicMovement.png', 16, 16);
   },
 
   create: function () {
@@ -36,6 +36,8 @@ var PreloaderScene = {
 window.onload = function () {
   var game = new Phaser.Game(256, 240, Phaser.AUTO, 'game');
 
+  game.antialias = false;
+  
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);

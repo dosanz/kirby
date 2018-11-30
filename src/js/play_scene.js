@@ -1,8 +1,8 @@
 'use strict';
 
-var GameObject = require('./gameObject');
-var Character = require('./character');
-var Kirby = require('./Kirby');
+var GameObject = require('./gameObject.js');
+var Character = require('./character.js');
+var Kirby = require('./Kirby.js');
 
   var PlayScene = {
   create: function () {
@@ -11,8 +11,8 @@ var Kirby = require('./Kirby');
     // logo.anchor.setTo(0.5, 0.5);
 
     // meter a kirby en el mundo
-    this.game.player = new Kirby(this.game, 10, 10);
-    this.game.world.addChild(player);
+    this.player = new Kirby(this.game, 10, 10);
+    this.game.world.addChild(this.player);
   }
 };
 
