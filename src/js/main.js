@@ -23,7 +23,7 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
-    this.game.load.spritesheet('kirby', 'images/kirbyBasicMovement.png', 16, 16);
+    this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16);
   },
 
   create: function () {

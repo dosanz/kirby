@@ -15,16 +15,21 @@ function Character(game, x, y, spriteName) {
 Character.prototype = Object.create(GameObject.prototype);
 Character.prototype.constructor = Character;
 
+
+
 Character.prototype.move = function (movementSpeed) { 
 	this.body.velocity.x = movementSpeed;
 }
+
 
 Character.prototype.stop = function () {
 	this.body.velocity.x = 0;
 }
 
+
 Character.prototype.update = function () {
 
 }
+
 
 module.exports = Character;
