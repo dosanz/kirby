@@ -17,7 +17,7 @@ function Kirby (game, x, y) {
 	this.jumpHeight = 120;
 	this.originalScale = this.scale.x;
 
-	this.currentPowerUp = NORMAL;
+	this.currentPowerUp = Character.NORMAL;
 
 	// control bools --------------------
 	this.empty = true;
@@ -143,7 +143,7 @@ Kirby.prototype.jump = function () {
 // TODO: fill
 Kirby.prototype.act = function () {
 	switch(this.currentPowerUp){
-		case NORMAL:
+		case Character.NORMAL:
 			this.invincible = true;
 			// calls enemy.beingEaten()
 
