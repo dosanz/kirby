@@ -17,7 +17,7 @@ var Enemy = require('./enemy.js');
     this.player = new Kirby(this.game, 10, 10);
     this.game.world.addChild(this.player);
 
-    this.waddleDee = new Enemy(this.game, 40, 40, Character.NORMAL);
+    this.waddleDee = new Enemy(this.game, 40, 40, Character.NORMAL, this.player);
     this.game.world.addChild(this.waddleDee);
   }
 };

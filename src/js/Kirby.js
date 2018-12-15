@@ -15,6 +15,7 @@ function Kirby (game, x, y) {
 	Character.call(this, game, x, y, 'kirby');
 	this.movementSpeed = GROUND_SPEED;
 	this.jumpHeight = 120;
+	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 
 	this.currentPowerUp = Character.NORMAL;
@@ -86,11 +87,13 @@ Kirby.prototype.manageInput = function () {
 		this.scale.x = -1 * this.originalScale;
 		Character.prototype.move.call(this, -this.movementSpeed);
 		this.isMoving = true;
+		this.facingRight = false;
 	} 
 	if (this.keyD.isDown) {
 		this.scale.x = this.originalScale;
 		Character.prototype.move.call(this, this.movementSpeed);
 		this.isMoving = true;
+		this.facingRight = true;
 	}
 	if (this.keyW.isDown) {
 		if (this.canFly) {

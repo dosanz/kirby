@@ -3,9 +3,13 @@
 var GameObject = require('./gameObject.js');
 var Character = require('./character.js');
 
-function Enemy (game, x, y, ability){
+function Enemy (game, x, y, ability, kirby){
     if (ability === Character.NORMAL) { // waddle dee
 		Character.call(this, game, x, y, 'waddleDee');
+		// ADJUST THIS VALUES
+		this.speed = 2; // speed is diferent depending on the enemy type
+		this.actDelay = 500; // it might depend on the enemy type (and it should be around 2-3 seconds)
+		// this.edible = true (in case we add enemies like Gordo)
 	}
 	else if (ability === Character.THUNDER) { // eye thing
 		Character.call(this, game, x, y, 'waddleDoo');
@@ -17,7 +21,16 @@ function Enemy (game, x, y, ability){
 	Enemy.prototype.setAnimations.call(this);
 	this.animations.play('idle');
 
-    this.powerUp = ability;
+	this.kirby = kirby; // kirby
+
+	this.powerUp = ability; // the power up kirby will get when an enemy is eaten
+
+	this.actTimer = 0; //
+
+	// control bools --------------------------------
+	this.beingAbsorbed = false;
+	
+
 }
 
 Enemy.prototype = Object.create(Character.prototype);
@@ -47,15 +60,47 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
-    // calls move with a speed depending on the direction the enemy is facing until the enemy is out of the camera (when enemies appear they are always facing kirby)
+	if (this.body.onFloor()){
+		Character.prototype.move.call(this, this.speed);
+	}
+	if (this.game.time.now > this.actTimer){
+		console.log(this.actTimer);
+		this.actTimer = this.game.time.now + this.actDelay;
+		// calls the enemy act
+	}
+	Enemy.prototype.beingEaten.call(this);
 }
 
 Enemy.prototype.beingEaten = function(){
-    // if the enemy is in kirbys swallow range (depends on the direction kirby is facing)
-    //  moveToXY(displayObject, x, y, speed, maxTime)
-    // if the enemy collides with kirby, kirby gets full (slower and unable to fly)
-    // the enemy is killed but the powerUp is stored. Kirby contains a generic object that can be spitted (causes damage or disappears after a few seconds) 
-    //                                                                                             or swallowed (kirby gets a power up)
+	if (this.kirby.currentPowerUp == Character.NORMAL && this.kirby.acting){
+		if (!this.kirby.facingRight && ((this.x < this.kirby.x) && (this.x >= this.kirby.x - this.kirby.swallowRange))){
+			console.log("eaten from the right");
+			this.beingAbsorbed = true;
+		}
+		else if (this.kirby.facingRight && ((this.x > this.kirby.x) && (this.x <= this.kirby.x + this.kirby.swallowRange))){
+			console.log("eaten from the left");
+			this.beingAbsorbed = true;
+		}
+	}
+	else{
+		this.beingAbsorbed = false;
+	}
 }
+
+//Enemy.prototype.moveToKirby() = function(){
+//	if (this.beingEaten == true){
+//	the enemy moves to kirby (check phaser examples) and if it collides with kirby they're set to full, !acting
+//	then the enemy dies but it's powerUp is stored somewhere (maybe create in kirby a this.storedPowerUp value?) and a generic object is created
+//	if a full kirby acts they shoot a star, if s key is pressed the storedPowerUp becomes the currentPowerUp (changes in kirby module)
+//
+//	}
+//}
+
+// Enemy.prototype.act() = function(){
+//	switch (this.powerUp){
+//		case normal:
+//		...
+//	}
+// }
 
 module.exports = Enemy;
