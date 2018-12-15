@@ -3,10 +3,6 @@
 var GameObject = require('./gameObject.js');
 var Character = require('./character.js');
 
-const NORMAL = 'normal';
-const FIRE = 'fire';
-const THUNDER = 'thunder';
-
 const AIR_SPEED = 180;
 const GROUND_SPEED = 120;
 
@@ -30,6 +26,10 @@ function Kirby (game, x, y) {
 	this.canFly = false;
 	this.isMoving = false;
 	this.acting = false;
+
+	this.facingRight = true;
+	this.invincible = false;
+	this.full = false;
 
 	// input keys ------------------------
 	this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -142,6 +142,12 @@ Kirby.prototype.jump = function () {
 
 // TODO: fill
 Kirby.prototype.act = function () {
+	switch(this.currentPowerUp){
+		case NORMAL:
+			this.invincible = true;
+			// calls enemy.beingEaten()
+
+	}
 	
 }
 

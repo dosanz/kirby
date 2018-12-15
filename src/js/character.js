@@ -2,6 +2,10 @@
 
 var GameObject = require('./gameObject.js');
 
+const NORMAL = 'normal';
+const FIRE = 'fire';
+const THUNDER = 'thunder';
+
 function Character(game, x, y, spriteName) {
 	GameObject.call(this, game, x, y, spriteName);
 	//this.body.collideWorldBounds = true;
