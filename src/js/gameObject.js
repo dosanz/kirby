@@ -2,6 +2,7 @@
 
 function GameObject(game, x, y, spriteName) {
 	Phaser.Sprite.call(this, game, x, y, spriteName);
+	this.anchor.setTo(0.5, 0.5);
 	// this.x = x;
 	// this.y = y;
 

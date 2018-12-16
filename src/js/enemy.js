@@ -72,7 +72,6 @@ Enemy.prototype.update = function(){
 			this.staysIdle = false;
 		}
 
-		console.log(this.actTimer);
 		this.actTimer = this.game.time.now + this.actDelay;
 		// calls the enemy act
 		if (!this.staysIdle) { 
@@ -88,17 +87,16 @@ Enemy.prototype.update = function(){
 		}
 	}
 	Enemy.prototype.beingEaten.call(this);
+	Enemy.prototype.moveToKirby.call(this);
 }
 
 
 Enemy.prototype.beingEaten = function(){
-	if (this.kirby.currentPowerUp == Character.NORMAL && this.kirby.acting){
+	if (this.kirby.currentPowerUp == Character.NORMAL && this.kirby.acting && this.kirby.empty){
 		if (!this.kirby.facingRight && ((this.x < this.kirby.x) && (this.x >= this.kirby.x - this.kirby.swallowRange))){
-			console.log("eaten from the right");
 			this.beingAbsorbed = true;
 		}
 		else if (this.kirby.facingRight && ((this.x > this.kirby.x) && (this.x <= this.kirby.x + this.kirby.swallowRange))){
-			console.log("eaten from the left");
 			this.beingAbsorbed = true;
 		}
 	}
@@ -107,14 +105,23 @@ Enemy.prototype.beingEaten = function(){
 	}
 }
 
-//Enemy.prototype.moveToKirby() = function(){
-//	if (this.beingEaten == true){
-//	the enemy moves to kirby (check phaser examples) and if it collides with kirby they're set to full, !acting
-//	then the enemy dies but it's powerUp is stored somewhere (maybe create in kirby a this.storedPowerUp value?) and a generic object is created
-//	if a full kirby acts they shoot a star, if s key is pressed the storedPowerUp becomes the currentPowerUp (changes in kirby module)
-//
-//	}
-//}
+Enemy.prototype.moveToKirby = function(){
+	if (this.beingAbsorbed == true){
+		var angle = (this.game.physics.arcade.angleBetween(this, this.kirby) * (180/Math.PI));
+		this.game.physics.arcade.velocityFromAngle(angle, 100, this.body.velocity);
+
+		if (this.game.physics.arcade.overlap(this, this.kirby)){
+			this.kirby.storedPowerUp = this.powerUp;
+			this.kirby.empty = false;
+			this.kirby.acting = false;
+			this.kirby.keySpace.enable = false;
+			this.kill();
+		}
+	}
+	else{
+		Character.prototype.stop.call(this);
+	}
+}
 
 // Enemy.prototype.act() = function(){
 //	switch (this.powerUp){

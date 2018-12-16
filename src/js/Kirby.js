@@ -19,6 +19,7 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 
 	this.currentPowerUp = Character.NORMAL;
+	this.storedPowerUp = Character.NORMAL;
 
 	// control bools --------------------
 	this.empty = true;
@@ -59,6 +60,8 @@ Kirby.prototype.update = function () {
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
 	
+	console.log(this.keySpace.enable);
+
 	if (this.body.onFloor()) {
 		this.grounded = true;
 	}
@@ -67,7 +70,6 @@ Kirby.prototype.update = function () {
 	}
 
 }
-
 
 Kirby.prototype.manageInput = function () {
 	if (this.grounded) {
@@ -110,21 +112,29 @@ Kirby.prototype.manageInput = function () {
 			this.flying = false; 
 			this.body.gravity.y = GROUND_GRAVITY;
 		}
+		if (!this.empty){
+			Kirby.prototype.swallow.call(this);
+		}
 		// add else if grounded: smooshed down sprite
 	}
 	if (this.keySpace.isDown) {
+		Character.prototype.stop.call(this);
 		this.acting = true;
 		Kirby.prototype.act.call(this);
 	}
 
-	if (this.keyW.isUp && !this.grounded) {
+	if (this.keyW.isUp && !this.grounded && this.empty) {
 		this.canFly = true;
+	}
+
+	if (this.keySpace.isUp){
+		this.keySpace.enable = true;
 	}
 }
 
 
 Kirby.prototype.manageAnimations = function() {
-	if (this.acting) {
+	if (this.acting && this.empty) {
 		this.animations.play('inhale');
 	}
 	else if (!this.isMoving) {
@@ -142,14 +152,25 @@ Kirby.prototype.jump = function () {
 	this.body.velocity.y = -this.jumpHeight;
 }
 
+Kirby.prototype.swallow = function(){
+	this.currentPowerUp = this.storedPowerUp;
+	this.empty = true;
+}
+
 
 // TODO: fill
 Kirby.prototype.act = function () {
+
 	switch(this.currentPowerUp){
 		case Character.NORMAL:
-			this.invincible = true;
-			// calls enemy.beingEaten()
-
+			if (this.empty){
+				this.invincible = true;
+			}
+			else if (!this.empty && this.keySpace.enable){
+				this.empty = true;
+				// shoot a star
+			}
+			break;
 	}
 	
 }
