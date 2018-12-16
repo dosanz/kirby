@@ -4,11 +4,13 @@ var GameObject = require('./gameObject.js');
 var Character = require('./character.js');
 
 function Enemy (game, x, y, ability, kirby){
+	// set different values depending on the enemy type ----------------
     if (ability === Character.NORMAL) { // waddle dee
 		Character.call(this, game, x, y, 'waddleDee');
 		// ADJUST THIS VALUES
-		this.speed = 2; // speed is diferent depending on the enemy type
-		this.actDelay = 500; // it might depend on the enemy type (and it should be around 2-3 seconds)
+		this.speed = 48; // speed is diferent depending on the enemy type
+		this.actDelay = 2000; // it might depend on the enemy type (and it should be around 2-3 seconds)
+		this.enemyAct = Enemy.prototype.normal.call(this);
 		// this.edible = true (in case we add enemies like Gordo)
 	}
 	else if (ability === Character.THUNDER) { // eye thing
@@ -29,7 +31,8 @@ function Enemy (game, x, y, ability, kirby){
 
 	// control bools --------------------------------
 	this.beingAbsorbed = false;
-	
+	this.staysIdle = false;
+	this.acts = false;
 
 }
 
@@ -60,16 +63,33 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
-	if (this.body.onFloor()){
+	if (this.body.onFloor() && !this.staysIdle){
+		this.animations.play('walk');
 		Character.prototype.move.call(this, this.speed);
 	}
-	if (this.game.time.now > this.actTimer){
+	if (this.game.time.now > this.actTimer){   // TODO: fix this so it repeats a cycle of acting, staying idle, acting...
+		if (!this.acts) {
+			this.staysIdle = false;
+		}
+
 		console.log(this.actTimer);
 		this.actTimer = this.game.time.now + this.actDelay;
 		// calls the enemy act
+		if (!this.staysIdle) { 
+			this.enemyAct;
+			this.staysIdle = true;
+			this.acts = true;
+		}
+		else {
+			Character.prototype.stop.call(this);
+			this.animations.play('idle');
+			//this.staysIdle = false;
+			this.acts = false;
+		}
 	}
 	Enemy.prototype.beingEaten.call(this);
 }
+
 
 Enemy.prototype.beingEaten = function(){
 	if (this.kirby.currentPowerUp == Character.NORMAL && this.kirby.acting){
@@ -102,5 +122,15 @@ Enemy.prototype.beingEaten = function(){
 //		...
 //	}
 // }
+
+Enemy.prototype.normal = function() {
+	this.body.velocity.y = -1000;
+	console.log('pk');
+}
+
+
+Enemy.prototype.fire = function() {
+	console.log('fire!!');
+}
 
 module.exports = Enemy;
