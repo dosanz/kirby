@@ -1,11 +1,15 @@
 'use strict';
 
 var GameObject = require('./gameObject.js');
+var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
+var Kirby = require('./Kirby.js');
 
-function Enemy (game, x, y, ability, kirby){
+const FIRST_ENEMY = 2;
+
+function Enemy (game, x, y, ability, kirby, tag){
 	// set different values depending on the enemy type ----------------
-    if (ability === Character.NORMAL) { // waddle dee
+    if (ability === MovingObject.NORMAL) { // waddle dee
 		Character.call(this, game, x, y, 'waddleDee');
 		// ADJUST THIS VALUES
 		this.speed = 48; // speed is diferent depending on the enemy type
@@ -20,6 +24,9 @@ function Enemy (game, x, y, ability, kirby){
 		Character.call(this, game, x, y, 'waddleDee');
 	}
 
+	this.tag = tag;
+	this.originalScale = this.scale.x;
+
 	Enemy.prototype.setAnimations.call(this);
 	this.animations.play('idle');
 
@@ -28,6 +35,13 @@ function Enemy (game, x, y, ability, kirby){
 	this.powerUp = ability; // the power up kirby will get when an enemy is eaten
 
 	this.actTimer = 0; //
+
+	if (this.x > this.kirby.x){
+		this.facingRight = false;
+	}
+	else if (this.x < this.kirby.x){
+		this.facingRight = true;
+	}
 
 	// control bools --------------------------------
 	this.beingAbsorbed = false;
@@ -41,11 +55,12 @@ Enemy.prototype.constructor = Enemy;
 
 
 Enemy.prototype.setAnimations = function() {
-	if (this.powerUp === Character.NORMAL) { // waddle dee
+	if (this.powerUp === MovingObject.NORMAL) { // waddle dee
 		this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 		this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+		this.hurt = this.animations.add('hurt', [8, 9, 10, 11], 20, true);
 	}
-	else if (this.powerUp === Character.THUNDER) { // eye thing
+	else if (this.powerUp === MovingObject.THUNDER) { // eye thing
 		this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 		this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
 		this.attack = this.animations.add('attack', [8, 9, 10, 11], 1, false);
@@ -63,9 +78,15 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
+	if (this.facingRight){
+		this.scale.x = this.originalScale;
+	}
+	else if (!this.facingRight){
+		this.scale.x = -1 * this.originalScale;
+	}
 	if (this.body.onFloor() && !this.staysIdle){
 		this.animations.play('walk');
-		Character.prototype.move.call(this, this.speed);
+		MovingObject.prototype.move.call(this, this.speed);
 	}
 	if (this.game.time.now > this.actTimer){   // TODO: fix this so it repeats a cycle of acting, staying idle, acting...
 		if (!this.acts) {
@@ -80,7 +101,7 @@ Enemy.prototype.update = function(){
 			this.acts = true;
 		}
 		else {
-			Character.prototype.stop.call(this);
+			MovingObject.prototype.stop.call(this);
 			this.animations.play('idle');
 			//this.staysIdle = false;
 			this.acts = false;
@@ -92,7 +113,7 @@ Enemy.prototype.update = function(){
 
 
 Enemy.prototype.beingEaten = function(){
-	if (this.kirby.currentPowerUp == Character.NORMAL && this.kirby.acting && this.kirby.empty){
+	if (this.kirby.currentPowerUp == MovingObject.NORMAL && this.kirby.acting && this.kirby.empty){
 		if (!this.kirby.facingRight && ((this.x < this.kirby.x) && (this.x >= this.kirby.x - this.kirby.swallowRange))){
 			this.beingAbsorbed = true;
 		}
@@ -110,17 +131,21 @@ Enemy.prototype.moveToKirby = function(){
 		var angle = (this.game.physics.arcade.angleBetween(this, this.kirby) * (180/Math.PI));
 		this.game.physics.arcade.velocityFromAngle(angle, 100, this.body.velocity);
 
-		if (this.game.physics.arcade.overlap(this, this.kirby)){
-			this.kirby.storedPowerUp = this.powerUp;
-			this.kirby.empty = false;
-			this.kirby.acting = false;
-			this.kirby.keySpace.enable = false;
-			this.kill();
+		if (this.game.physics.arcade.collide(this, this.kirby)){
+			this.kirby.eat(this, this.kirby);
+			//Kirby.prototype.eat.call(this.kirby, this);
+			Enemy.prototype.die.call(this);
 		}
 	}
 	else{
-		Character.prototype.stop.call(this);
+		MovingObject.prototype.stop.call(this);
 	}
+}
+
+Enemy.prototype.die = function(){
+	this.animations.play('hurt');
+	// add a timer or something so the enemy dies when the animation is finished
+	this.kill();
 }
 
 // Enemy.prototype.act() = function(){

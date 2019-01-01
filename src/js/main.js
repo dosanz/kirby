@@ -27,6 +27,7 @@ var PreloaderScene = {
     this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
+    this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
   },
 
   create: function () {

@@ -1,7 +1,10 @@
 'use strict';
 
 var GameObject = require('./gameObject.js');
+var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
+var Attack = require('./attack.js');
+var Bullet = require('./bullet.js');
 
 const AIR_SPEED = 180;
 const GROUND_SPEED = 120;
@@ -11,15 +14,17 @@ const GROUND_GRAVITY = 400;
 
 const FLIP_FACTOR = -1;
 
-function Kirby (game, x, y) {
+function Kirby (game, x, y, tag) {
 	Character.call(this, game, x, y, 'kirby');
+	this.attack = null;
 	this.movementSpeed = GROUND_SPEED;
 	this.jumpHeight = 120;
 	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 
-	this.currentPowerUp = Character.NORMAL;
-	this.storedPowerUp = Character.NORMAL;
+	this.currentPowerUp = MovingObject.NORMAL;
+	this.storedPowerUp = MovingObject.NORMAL;
+	this.tag = tag;
 
 	// control bools --------------------
 	this.empty = true;
@@ -56,19 +61,22 @@ Kirby.prototype.constructor = Kirby;
 
 Kirby.prototype.update = function () {
 	// Character.prototype.update.call(this, ...)
-	Character.prototype.stop.call(this);
+	console.log(this.game.world.children.length);
+	MovingObject.prototype.stop.call(this);
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
-	
-	console.log(this.keySpace.enable);
 
+	if (this.attack != null){
+		MovingObject.prototype.move.call(this.attack, this.attack.speed);
+    	Attack.prototype.damage.call(this.attack);
+	}
+	
 	if (this.body.onFloor()) {
 		this.grounded = true;
 	}
 	else {
 		this.grounded = false;
-	}
-
+	}	
 }
 
 Kirby.prototype.manageInput = function () {
@@ -87,13 +95,13 @@ Kirby.prototype.manageInput = function () {
 	// key catching -------------------
 	if (this.keyA.isDown) {
 		this.scale.x = -1 * this.originalScale;
-		Character.prototype.move.call(this, -this.movementSpeed);
+		MovingObject.prototype.move.call(this, -this.movementSpeed);
 		this.isMoving = true;
 		this.facingRight = false;
 	} 
 	if (this.keyD.isDown) {
 		this.scale.x = this.originalScale;
-		Character.prototype.move.call(this, this.movementSpeed);
+		MovingObject.prototype.move.call(this, this.movementSpeed);
 		this.isMoving = true;
 		this.facingRight = true;
 	}
@@ -118,7 +126,7 @@ Kirby.prototype.manageInput = function () {
 		// add else if grounded: smooshed down sprite
 	}
 	if (this.keySpace.isDown) {
-		Character.prototype.stop.call(this);
+		MovingObject.prototype.stop.call(this);
 		this.acting = true;
 		Kirby.prototype.act.call(this);
 	}
@@ -147,6 +155,13 @@ Kirby.prototype.manageAnimations = function() {
 	}
 }
 
+Kirby.prototype.eat = function(enemy){
+	this.storedPowerUp = enemy.powerUp;
+	this.empty = false;
+	this.acting = false;
+	this.keySpace.enable = false;
+
+}
 
 Kirby.prototype.jump = function () {
 	this.body.velocity.y = -this.jumpHeight;
@@ -157,18 +172,25 @@ Kirby.prototype.swallow = function(){
 	this.empty = true;
 }
 
+Kirby.prototype.getHurt = function (damage){
+	this.health -= damage;
+}
+
 
 // TODO: fill
 Kirby.prototype.act = function () {
 
 	switch(this.currentPowerUp){
-		case Character.NORMAL:
+		case MovingObject.NORMAL:
 			if (this.empty){
 				this.invincible = true;
 			}
 			else if (!this.empty && this.keySpace.enable){
 				this.empty = true;
-				// shoot a star
+				if (this.attack != null){
+					this.attack.destroy(this);
+				}
+				this.attack = new Bullet(this.game, this.x, this.y, 'starAttack', this.facingRight, 5, true);
 			}
 			break;
 	}

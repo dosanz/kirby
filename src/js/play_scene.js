@@ -14,18 +14,19 @@ var Enemy = require('./enemy.js');
     this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
 
     // meter a kirby en el mundo
-    this.player = new Kirby(this.game, 10, 10);
+    this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
-
-    this.waddleDee = new Enemy(this.game, 40, 40, Character.NORMAL, this.player);
+    
+    this.attack
+    this.waddleDee = new Enemy(this.game, 40, 40, Character.NORMAL, this.player, 'enemy');
     this.game.world.addChild(this.waddleDee);
-    this.waddleDee1 = new Enemy(this.game, 200, 40, Character.NORMAL, this.player);
+    this.waddleDee1 = new Enemy(this.game, 200, 40, Character.NORMAL, this.player, 'enemy');
     this.game.world.addChild(this.waddleDee1);
-    this.waddleDee2 = new Enemy(this.game, 60, 40, Character.NORMAL, this.player);
+    this.waddleDee2 = new Enemy(this.game, 60, 40, Character.NORMAL, this.player, 'enemy');
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 40, Character.NORMAL, this.player);
+    this.waddleDee3 = new Enemy(this.game, 80, 40, Character.NORMAL, this.player, 'enemy');
     this.game.world.addChild(this.waddleDee3);
-  }
+  }  
 };
 
 module.exports = PlayScene;
