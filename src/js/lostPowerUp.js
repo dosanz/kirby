@@ -30,12 +30,13 @@ LostPowerUp.prototype.update = function(){
         this.body.velocity.y = -200;
     }
 
-    if (this.game.time.now > this.spawnTime + LIFE_TIME){
-        this.kill();
-    }
-
     LostPowerUp.prototype.beingEaten.call(this);
     LostPowerUp.prototype.collideWithKirby.call(this);
+
+    if (this.game.time.now > this.spawnTime + LIFE_TIME){
+        this.kirby.lostPowerUpCount = 0;
+        this.kill();
+    }
 }
 
 LostPowerUp.prototype.beingEaten = function(){
@@ -58,6 +59,7 @@ LostPowerUp.prototype.collideWithKirby = function(){
 	if (this.game.physics.arcade.collide(this, this.kirby)){
 		if (this.beingAbsorbed == true){
             this.kirby.eat(this.powerUp, this.kirby);
+            this.kirby.lostPowerUpCount = 0;
             this.kill();
 		}
 	}

@@ -18,13 +18,13 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.player);
     
     this.attack
-    this.waddleDee = new Enemy(this.game, 40, 40, Character.NORMAL, this.player, 'enemy');
+    this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee);
-    this.waddleDee1 = new Enemy(this.game, 200, 40, Character.NORMAL, this.player, 'enemy');
+    this.waddleDee1 = new Enemy(this.game, 200, 40, 'normal', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee1);
-    this.waddleDee2 = new Enemy(this.game, 60, 40, Character.NORMAL, this.player, 'enemy');
+    this.waddleDee2 = new Enemy(this.game, 60, 40, 'normal', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 40, Character.NORMAL, this.player, 'enemy');
+    this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee3);
   }  
 };

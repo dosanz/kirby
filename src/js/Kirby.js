@@ -21,13 +21,13 @@ function Kirby (game, x, y) {
 	Character.call(this, game, x, y, 'kirby');
 	this.attack = null;
 	this.lostPowerUp = null;
+	this.lostPowerUpCount = 0;
 	this.movementSpeed = GROUND_SPEED;
 	this.jumpHeight = 120;
 	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.thingEaten = null;
 	this.currentPowerUp = 'stone';
 	this.storedPowerUp = MovingObject.NORMAL;
 	this.health = 5;
@@ -69,7 +69,7 @@ Kirby.prototype.constructor = Kirby;
 
 Kirby.prototype.update = function () {
 	// Character.prototype.update.call(this, ...)
-	console.log(this.currentPowerUp);
+	console.log(this.lostPowerUpCount);
 	MovingObject.prototype.stop.call(this);
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
@@ -132,7 +132,7 @@ Kirby.prototype.manageInput = function () {
 			Kirby.prototype.swallow.call(this);
 		}
 
-		if (this.keySpace.isDown){
+		if (this.keySpace.isDown && this.lostPowerUpCount == 0){
 			Kirby.prototype.releasePowerUp.call(this);
 		}
 		// add else if grounded: smooshed down sprite
@@ -213,6 +213,7 @@ Kirby.prototype.releasePowerUp = function(){
 		}
 		this.lostPowerUp = new LostPowerUp(this.game, this.x, this.y, 'starAttack', this.currentPowerUp, this);
 		this.currentPowerUp = 'normal';
+		this.lostPowerUpCount = 1;
 	}
 }
 

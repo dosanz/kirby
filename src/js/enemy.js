@@ -46,6 +46,9 @@ function Enemy (game, x, y, ability, kirby){
 	this.beingAbsorbed = false;
 	this.staysIdle = false;
 	this.acts = false;
+	this.tag = 'enemy';
+
+	console.log(this.powerUp);
 }
 
 Enemy.prototype = Object.create(Character.prototype);

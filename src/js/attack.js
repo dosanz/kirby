@@ -26,9 +26,12 @@ Attack.prototype.damage = function(){
         var enemy = null;
         var count = 2;
         while(enemy == null && count < this.game.world.children.length){
+            
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
-                this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+                if (enemy.tag == 'enemy'){
+                    this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+                }
             }
             count++;
         }
