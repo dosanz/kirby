@@ -24,4 +24,9 @@ MovingObject.prototype.stop = function () {
 	this.body.velocity.x = 0;
 }
 
+MovingObject.prototype.moveToKirby = function(){
+	var angle = (this.game.physics.arcade.angleBetween(this, this.kirby) * (180/Math.PI));
+	this.game.physics.arcade.velocityFromAngle(angle, 100, this.body.velocity);
+}
+
 module.exports = MovingObject;
