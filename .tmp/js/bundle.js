@@ -6,6 +6,7 @@ var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
 var Attack = require('./attack.js');
 var Bullet = require('./bullet.js');
+var Aura = require('./aura.js');
 var LostPowerUp = require('./lostPowerUp');
 
 const AIR_SPEED = 180;
@@ -29,7 +30,7 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.currentPowerUp = 'stone';
+	this.currentPowerUp = 'thunder';
 	this.storedPowerUp = MovingObject.NORMAL;
 	this.health = 5;
 	this.lastHurt = 0;
@@ -69,8 +70,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	// Character.prototype.update.call(this, ...)
-	console.log(this.lostPowerUpCount);
+	console.log(this.game.time.now);
 	MovingObject.prototype.stop.call(this);
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
@@ -149,7 +149,6 @@ Kirby.prototype.manageInput = function () {
 		else {
 			if (this.game.time.now > this.actTimer) {
 				this.actTimer = this.game.time.now + ACT_TIMER;
-				this.canMove = false;
 				this.acting = true;
 				Kirby.prototype.act.call(this);
 			}
@@ -165,6 +164,9 @@ Kirby.prototype.manageInput = function () {
 	}
 }
 
+Kirby.prototype.pause = function(){
+	this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+}
 
 Kirby.prototype.manageAnimations = function() {
 	if (this.acting && this.empty) {
@@ -247,6 +249,14 @@ Kirby.prototype.act = function () {
 		}
 		break;
 
+		case 'thunder':
+			if (this.attack != null){
+				this.attack.destroy(this);
+			}
+			this.attack = new Aura(this.game, this.x, this.y, 'starAttack', this.facingRight, 5, true, this);
+			this.canMove = false;
+		break;
+
 		default:
 			break;
 	}	
@@ -269,7 +279,7 @@ module.exports = Kirby;
 
 // 	}
 // }
-},{"./attack.js":2,"./bullet.js":3,"./character.js":4,"./gameObject.js":6,"./lostPowerUp":7,"./movingObject.js":9}],2:[function(require,module,exports){
+},{"./attack.js":2,"./aura.js":3,"./bullet.js":4,"./character.js":5,"./gameObject.js":7,"./lostPowerUp":8,"./movingObject.js":10}],2:[function(require,module,exports){
 'use strict'
 // attacks are created in enemy or kirby modules and collisions are checked in play_scene's main loop
 var Character = require('./character.js');
@@ -320,11 +330,63 @@ Attack.prototype.damage = function(){
     // if attack collides with enemy ---- enemy dies and the bullet is killed
     // else if collides with the world or is out of the camera ---- the bullet is killed
     // else if after a few seconds the bullet isn't killed ---- the bullet is killed
-
 }
 
 module.exports = Attack;
-},{"./Kirby.js":1,"./character.js":4,"./enemy.js":5,"./movingObject.js":9}],3:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./movingObject.js":10}],3:[function(require,module,exports){
+'use strict'
+
+var Attack = require ('./attack.js');
+
+const LIFE_TIME = 500;
+
+function Aura(game, x, y, spriteName, facingRight, power, kirby, attacker){
+    Attack.call(this, game, x, y, spriteName, facingRight, power, kirby);
+    this.body.disable;
+    this.attacker = attacker;
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.attacker.canMove = true; this.kill();}, this);
+}
+
+Aura.prototype = Object.create(Attack.prototype);
+Aura.prototype.constructor = Aura;
+
+Aura.prototype.update = function(){
+    this.y = this.attacker.y;
+
+    Aura.prototype.damage.call(this);
+}
+Aura.prototype.collideWithEnemy = function(enemy){
+    enemy.die();
+}
+
+Aura.prototype.damage = function(){
+    if (this.kirby){
+        var enemy = null;
+        var count = 2;
+        while(enemy == null && count < this.game.world.children.length){
+            
+            if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
+                enemy = this.game.world.children[count];
+                if (enemy.tag == 'enemy'){
+                    if (this.checkOverlap(enemy, this)){
+                        enemy.die();
+                    }
+                }
+            }
+            count++;
+        }
+    }
+}
+
+Aura.prototype.checkOverlap = function(enemy){
+    var enemyBounds = enemy.getBounds();
+    var auraBounds = this.getBounds();
+
+    return Phaser.Rectangle.intersects(boundsA, boundsB);
+}
+
+module.exports = Aura;
+},{"./attack.js":2}],4:[function(require,module,exports){
 'use strict'
 
 var Attack = require ('./attack.js');
@@ -345,7 +407,6 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
-    console.log('weno');
     Attack.prototype.move.call(this, this.speed);
     Attack.prototype.damage.call(this);
 }
@@ -356,7 +417,7 @@ Bullet.prototype.collideWithEnemy = function(enemy){
 }
 
 module.exports = Bullet;
-},{"./attack.js":2}],4:[function(require,module,exports){
+},{"./attack.js":2}],5:[function(require,module,exports){
 'use strict';
 
 var MovingObject = require('./movingObject.js');
@@ -373,7 +434,7 @@ Character.prototype = Object.create(MovingObject.prototype);
 Character.prototype.constructor = Character;
 
 module.exports = Character;
-},{"./movingObject.js":9}],5:[function(require,module,exports){
+},{"./movingObject.js":10}],6:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -551,7 +612,7 @@ Enemy.prototype.fire = function() {
 }
 
 module.exports = Enemy;
-},{"./Kirby.js":1,"./character.js":4,"./gameObject.js":6,"./movingObject.js":9}],6:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":5,"./gameObject.js":7,"./movingObject.js":10}],7:[function(require,module,exports){
 'use strict';
 
 function GameObject(game, x, y, spriteName) {
@@ -571,7 +632,7 @@ GameObject.prototype.constructor = GameObject;
 
 
 module.exports = GameObject;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var Character = require('./character.js');
@@ -592,8 +653,8 @@ function LostPowerUp(game, x, y, spriteName, powerUp, kirby) {
         this.body.velocity.x = 30;
     }
     
-    this.spawnTime = game.time.now;
     this.game.world.addChild(this);
+    this.game.time.events.add(Phaser.Timer.SECOND * 2, function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);
@@ -606,10 +667,6 @@ LostPowerUp.prototype.update = function(){
 
     LostPowerUp.prototype.beingEaten.call(this);
     LostPowerUp.prototype.collideWithKirby.call(this);
-
-    if (this.game.time.now > this.spawnTime + LIFE_TIME){
-        this.kill();
-    }
 }
 
 LostPowerUp.prototype.beingEaten = function(){
@@ -639,7 +696,7 @@ LostPowerUp.prototype.collideWithKirby = function(){
 }
 
 module.exports = LostPowerUp;
-},{"./character.js":4}],8:[function(require,module,exports){
+},{"./character.js":5}],9:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
@@ -692,7 +749,7 @@ window.onload = function () {
   game.state.start('boot');
 };
 
-},{"./play_scene.js":10}],9:[function(require,module,exports){
+},{"./play_scene.js":11}],10:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -725,7 +782,7 @@ MovingObject.prototype.moveToKirby = function(){
 }
 
 module.exports = MovingObject;
-},{"./gameObject.js":6}],10:[function(require,module,exports){
+},{"./gameObject.js":7}],11:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -735,6 +792,9 @@ var Enemy = require('./enemy.js');
 
   var PlayScene = {
   create: function () {
+
+    this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(function(){this.game.paused = !this.game.paused;}, this);
+    //this.input.keyboard.addKey (Phaser.Keyboard.R).onDown.add(this.restart(), this);
     // var logo = this.game.add.sprite(
     //   this.game.world.centerX, this.game.world.centerY, 'logo');
     // logo.anchor.setTo(0.5, 0.5);
@@ -754,8 +814,13 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee2);
     this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee3);
-  }  
+  },
+  
+  pauseGame: function(){
+    this.game.paused = !this.game.paused;
+  },
+
 };
 
 module.exports = PlayScene;
-},{"./Kirby.js":1,"./character.js":4,"./enemy.js":5,"./gameObject.js":6}]},{},[8]);
+},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./gameObject.js":7}]},{},[9]);

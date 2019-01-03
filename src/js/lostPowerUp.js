@@ -18,8 +18,8 @@ function LostPowerUp(game, x, y, spriteName, powerUp, kirby) {
         this.body.velocity.x = 30;
     }
     
-    this.spawnTime = game.time.now;
     this.game.world.addChild(this);
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);
@@ -32,11 +32,6 @@ LostPowerUp.prototype.update = function(){
 
     LostPowerUp.prototype.beingEaten.call(this);
     LostPowerUp.prototype.collideWithKirby.call(this);
-
-    if (this.game.time.now > this.spawnTime + LIFE_TIME){
-        this.kirby.lostPowerUpCount = 0;
-        this.kill();
-    }
 }
 
 LostPowerUp.prototype.beingEaten = function(){

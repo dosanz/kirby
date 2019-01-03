@@ -5,6 +5,7 @@ var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
 var Attack = require('./attack.js');
 var Bullet = require('./bullet.js');
+var Aura = require('./aura.js');
 var LostPowerUp = require('./lostPowerUp');
 
 const AIR_SPEED = 180;
@@ -28,7 +29,7 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.currentPowerUp = 'stone';
+	this.currentPowerUp = 'thunder';
 	this.storedPowerUp = MovingObject.NORMAL;
 	this.health = 5;
 	this.lastHurt = 0;
@@ -68,8 +69,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	// Character.prototype.update.call(this, ...)
-	console.log(this.lostPowerUpCount);
+	console.log(this.game.time.now);
 	MovingObject.prototype.stop.call(this);
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
@@ -148,7 +148,6 @@ Kirby.prototype.manageInput = function () {
 		else {
 			if (this.game.time.now > this.actTimer) {
 				this.actTimer = this.game.time.now + ACT_TIMER;
-				this.canMove = false;
 				this.acting = true;
 				Kirby.prototype.act.call(this);
 			}
@@ -164,6 +163,9 @@ Kirby.prototype.manageInput = function () {
 	}
 }
 
+Kirby.prototype.pause = function(){
+	this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+}
 
 Kirby.prototype.manageAnimations = function() {
 	if (this.acting && this.empty) {
@@ -244,6 +246,14 @@ Kirby.prototype.act = function () {
 				this.invincible = false;
 				this.canMove = true;
 		}
+		break;
+
+		case 'thunder':
+			if (this.attack != null){
+				this.attack.destroy(this);
+			}
+			this.attack = new Aura(this.game, this.x, this.y, 'starAttack', this.facingRight, 5, true, this);
+			this.canMove = false;
 		break;
 
 		default:

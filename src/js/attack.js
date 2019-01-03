@@ -48,7 +48,6 @@ Attack.prototype.damage = function(){
     // if attack collides with enemy ---- enemy dies and the bullet is killed
     // else if collides with the world or is out of the camera ---- the bullet is killed
     // else if after a few seconds the bullet isn't killed ---- the bullet is killed
-
 }
 
 module.exports = Attack;

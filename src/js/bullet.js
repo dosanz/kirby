@@ -18,7 +18,6 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
-    console.log('weno');
     Attack.prototype.move.call(this, this.speed);
     Attack.prototype.damage.call(this);
 }
