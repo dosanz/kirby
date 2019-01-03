@@ -1,6 +1,7 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var MainMenu = require('./mainMenu.js');
 var Level1 = require('./level1.js');
 
 
@@ -25,6 +26,8 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
+    this.game.load.image('playButton', 'images/playButton.png');
+    this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
@@ -39,7 +42,7 @@ var PreloaderScene = {
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('play');
+    this.game.state.start('mainMenu');
   }
 };
 
@@ -54,6 +57,7 @@ window.onload = function () {
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
   game.state.add('level1', Level1);
+  game.state.add('mainMenu', MainMenu);
 
   game.state.start('boot');
 };

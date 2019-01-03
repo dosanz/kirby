@@ -375,7 +375,7 @@ module.exports = Kirby;
 
 // 	}
 // }
-},{"./attack.js":2,"./aura.js":3,"./bullet.js":4,"./character.js":5,"./gameObject.js":7,"./lostPowerUp":9,"./movingObject.js":11}],2:[function(require,module,exports){
+},{"./attack.js":2,"./aura.js":3,"./bullet.js":4,"./character.js":5,"./gameObject.js":7,"./lostPowerUp":9,"./movingObject.js":12}],2:[function(require,module,exports){
 // TODO: make better sprites
 'use strict'
 var Character = require('./character.js');
@@ -425,7 +425,7 @@ Attack.prototype.damage = function(){
 }
 
 module.exports = Attack;
-},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./movingObject.js":11}],3:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./movingObject.js":12}],3:[function(require,module,exports){
 'use strict'
 
 var Attack = require ('./attack.js');
@@ -576,7 +576,7 @@ Character.prototype.moveToKirby = function(){
 }
 
 module.exports = Character;
-},{"./movingObject.js":11}],6:[function(require,module,exports){
+},{"./movingObject.js":12}],6:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -736,7 +736,7 @@ Enemy.prototype.fire = function() {
 }
 
 module.exports = Enemy;
-},{"./Kirby.js":1,"./character.js":5,"./gameObject.js":7,"./movingObject.js":11}],7:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":5,"./gameObject.js":7,"./movingObject.js":12}],7:[function(require,module,exports){
 'use strict';
 
 function GameObject(game, x, y, spriteName) {
@@ -833,6 +833,7 @@ module.exports = LostPowerUp;
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var MainMenu = require('./mainMenu.js');
 var Level1 = require('./level1.js');
 
 
@@ -857,6 +858,8 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
+    this.game.load.image('playButton', 'images/playButton.png');
+    this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
@@ -871,7 +874,7 @@ var PreloaderScene = {
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('play');
+    this.game.state.start('mainMenu');
   }
 };
 
@@ -886,11 +889,29 @@ window.onload = function () {
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
   game.state.add('level1', Level1);
+  game.state.add('mainMenu', MainMenu);
 
   game.state.start('boot');
 };
 
-},{"./level1.js":8,"./play_scene.js":12}],11:[function(require,module,exports){
+},{"./level1.js":8,"./mainMenu.js":11,"./play_scene.js":13}],11:[function(require,module,exports){
+'use strict';
+
+var GameObject = require('./gameObject.js');
+var Character = require('./character.js');
+var Kirby = require('./Kirby.js');
+var Enemy = require('./enemy.js');
+
+  var MainMenu = {
+  create: function () {
+    this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
+    this.button1 = this.game.add.button(this.game.world.centerX - 72, this.game.world.centerY - 50, 'playButton', function(){this.game.state.start('play');}, this, 2, 1, 0);
+    this.button2 = this.game.add.button(this.game.world.centerX - 72, this.game.world.centerY + 50, 'instrButton', function(){console.log('hola');}, this, 2, 1, 0);
+  }
+};
+
+module.exports = MainMenu;
+},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./gameObject.js":7}],12:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -913,7 +934,7 @@ MovingObject.prototype.stop = function () {
 }
 
 module.exports = MovingObject;
-},{"./gameObject.js":7}],12:[function(require,module,exports){
+},{"./gameObject.js":7}],13:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
