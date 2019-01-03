@@ -30,7 +30,7 @@ Attack.prototype.damage = function(){
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
                 if (enemy.tag == 'enemy'){
-                    this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+                    this.checkCollisions(enemy, this);
                 }
             }
             count++;

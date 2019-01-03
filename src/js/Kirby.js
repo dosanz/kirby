@@ -19,7 +19,11 @@ const ACT_TIMER = 1000;
 const FLIP_FACTOR = -1;
 
 function Kirby (game, x, y) {
-	Character.call(this, game, x, y, 'kirby');
+	MovingObject.call(this, game, x, y, 'kirby');
+
+	this.body.allowGravity = true;
+	this.body.gravity.y = 400;
+
 	this.attack = null;
 	this.lostPowerUp = null;
 	this.lostPowerUpCount = 0;
@@ -57,23 +61,22 @@ function Kirby (game, x, y) {
 	// animation set up --------------------
 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
-	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+	this.jumpAnim = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
 
 }
 
 
-Kirby.prototype = Object.create(Character.prototype);
+Kirby.prototype = Object.create(MovingObject.prototype);
 Kirby.prototype.constructor = Kirby;
 
 
 
 Kirby.prototype.update = function () {
-	console.log(this.grounded);
-	MovingObject.prototype.stop.call(this);
-	Kirby.prototype.manageInput.call(this);
-	Kirby.prototype.manageAnimations.call(this);
+	this.stop();
+	this.manageInput();
+	this.manageAnimations();
 
 	//if (this.attack != null){
 	//	MovingObject.prototype.move.call(this.attack, this.attack.speed);
@@ -104,13 +107,13 @@ Kirby.prototype.manageInput = function () {
 	// key catching -------------------
 	if (this.keyA.isDown && this.canMove) {
 		this.scale.x = -1 * this.originalScale;
-		MovingObject.prototype.move.call(this, -this.movementSpeed);
+		this.move(-this.movementSpeed);
 		this.isMoving = true;
 		this.facingRight = false;
 	} 
 	if (this.keyD.isDown && this.canMove) {
 		this.scale.x = this.originalScale;
-		MovingObject.prototype.move.call(this, this.movementSpeed);
+		this.move(this.movementSpeed);
 		this.isMoving = true;
 		this.facingRight = true;
 	}
@@ -118,10 +121,10 @@ Kirby.prototype.manageInput = function () {
 		if (this.canFly) {
 			this.flying = true;
 			this.body.gravity.y = AIR_GRAVITY;
-			Kirby.prototype.jump.call(this);
+			this.jump();
 		}
 		else if (this.grounded) {
-			Kirby.prototype.jump.call(this);
+			this.jump();
 		}
 	}
 	if (this.keyS.isDown && this.canMove) {
@@ -130,27 +133,27 @@ Kirby.prototype.manageInput = function () {
 			this.body.gravity.y = GROUND_GRAVITY;
 		}
 		if (!this.empty){
-			Kirby.prototype.swallow.call(this);
+			this.swallow();
 		}
 
 		if (this.keySpace.isDown && this.lostPowerUpCount == 0){
-			Kirby.prototype.releasePowerUp.call(this);
+			this.releasePowerUp();
 		}
 		// add else if grounded: smooshed down sprite
 	}
 	if (this.keySpace.isDown) {
 		if (this.currentPowerUp == 'normal')
 		{
-			MovingObject.prototype.stop.call(this);
+			this.stop();
 			this.acting = true;
-			Kirby.prototype.act.call(this);
+			this.act();
 		}
 
 		else {
 			if (this.game.time.now > this.actTimer) {
 				this.actTimer = this.game.time.now + ACT_TIMER;
 				this.acting = true;
-				Kirby.prototype.act.call(this);
+				this.act();
 			}
 		}
 	}
@@ -167,7 +170,7 @@ Kirby.prototype.manageInput = function () {
 Kirby.prototype.loadAnimations = function() {
  	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
  	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
- 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+ 	this.jumpAnim = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
  	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
 }
@@ -193,7 +196,7 @@ Kirby.prototype.getSmall = function() {
 	this.loadTexture('kirby');
 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
-	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+	this.jumpAnim = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
 	this.animations.play('idle');
@@ -257,7 +260,7 @@ Kirby.prototype.getHurt = function (damage){
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.health -= damage;
 
-		Kirby.prototype.releasePowerUp.call(this);
+		this.releasePowerUp();
 	}
 }
 

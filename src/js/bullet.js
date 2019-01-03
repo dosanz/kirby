@@ -18,8 +18,12 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
-    Attack.prototype.move.call(this, this.speed);
-    Attack.prototype.damage.call(this);
+    this.move(this.speed);
+    this.damage();
+}
+
+Bullet.prototype.checkCollisions = function(enemy){
+    this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
 }
 
 Bullet.prototype.collideWithEnemy = function(enemy){
