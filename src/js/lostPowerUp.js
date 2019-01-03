@@ -4,11 +4,11 @@ var Character = require('./character.js');
 
 const LIFE_TIME = 5000;
 
-function LostPowerUp(game, x, y, spriteName, powerUp, kirby) {
-    Character.call(this, game, x, y, spriteName, true);
-    this.powerUp = powerUp;
-    this.beingAbsorbed = false;
+function LostPowerUp(game, x, y, kirby) {
+    Character.call(this, game, x, y, 'starAttack', true);
     this.kirby = kirby;
+    this.powerUp = this.kirby.currentPowerUp;
+    this.beingAbsorbed = false;
 
     if (this.kirby.facingRight){
         this.speed = -30;
@@ -17,9 +17,14 @@ function LostPowerUp(game, x, y, spriteName, powerUp, kirby) {
     else{
         this.speed = 30;
     }
-    
+
+    this.moving = this.animations.add('moving', [0,1,2], 20, true);
+    this.crash = this.animations.add('crash', [3,4,5], 5, false);
+    this.crash.onComplete.add(function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
+    this.animations.play('moving');
+
     this.game.world.addChild(this);
-    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.animations.play('crash');}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);

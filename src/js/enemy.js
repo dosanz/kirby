@@ -6,7 +6,7 @@ var Character = require('./character.js');
 var Kirby = require('./Kirby.js');
 
 const FIRST_ENEMY = 2;
-const DEAD_ANIM = 400;
+const DEAD_ANIM = 150;
 
 function Enemy (game, x, y, ability, kirby){
 	// set different values depending on the enemy type ----------------
@@ -29,7 +29,7 @@ function Enemy (game, x, y, ability, kirby){
 
 	this.kirby = kirby; // kirby
 
-	this.powerUp = ability; // the power up kirby will get when an enemy is eaten
+	this.currentPowerUp = ability; // the power up kirby will get when an enemy is eaten
 
 	this.actTimer = 0; //
 
@@ -55,12 +55,12 @@ Enemy.prototype.constructor = Enemy;
 
 
 Enemy.prototype.setAnimations = function() {
-	if (this.powerUp === 'normal') { // waddle dee
+	if (this.currentPowerUp === 'normal') { // waddle dee
 		this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 		this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
 		this.hurt = this.animations.add('hurt', [8, 9, 10, 11], 15, true);
 	}
-	else if (this.powerUp === 'thunder') { // eye thing
+	else if (this.currentPowerUp === 'thunder') { // eye thing
 		this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 		this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
 		this.attack = this.animations.add('attack', [8, 9, 10, 11], 1, false);
@@ -117,7 +117,7 @@ Enemy.prototype.update = function(){
 Enemy.prototype.collideWithKirby = function(){
 	if (this.game.physics.arcade.collide(this, this.kirby)){
 		if (this.beingAbsorbed == true){
-			this.kirby.eat(this.powerUp, this.kirby);
+			this.kirby.eat(this.currentPowerUp, this.kirby);
 			this.die();
 		}
 		else if (this.kirby.invincible == true){

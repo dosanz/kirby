@@ -1,6 +1,7 @@
 'use strict';
 
 var PlayScene = require('./play_scene.js');
+var Level1 = require('./level1.js');
 
 
 var BootScene = {
@@ -24,15 +25,20 @@ var PreloaderScene = {
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
-    this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16);
+    this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
+    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 24, 24);
+    this.game.load.spritesheet('fireAttack', 'images/fire.png', 16, 16);
+    this.game.load.spritesheet('knifeAttack', 'images/knife.png', 16, 16);
+    this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 16, 16);
   },
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
     this.game.state.start('play');
   }
 };
@@ -47,6 +53,7 @@ window.onload = function () {
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
+  game.state.add('level1', Level1);
 
   game.state.start('boot');
 };

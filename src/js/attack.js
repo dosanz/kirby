@@ -1,20 +1,16 @@
+// TODO: make better sprites
 'use strict'
-// attacks are created in enemy or kirby modules and collisions are checked in play_scene's main loop
 var Character = require('./character.js');
 var Enemy = require('./enemy.js');
 var Kirby = require('./Kirby.js');
 var MovingObject = require ('./movingObject.js');
 
-function Attack(game, x, y, spriteName, facingRight, power, kirby) {
+function Attack(game, x, y, spriteName, power, kirby) {
     MovingObject.call(this, game, x, y, spriteName)
 
     this.kirby = kirby;
 
     this.game.world.addChild(this);
-
-    this.moving = this.animations.add('moving', [0,1,2], 20, true);
-    this.crash = this.animations.add('crash', [3,4,5], 5, false);
-    this.animations.play('moving');
 
 }
 

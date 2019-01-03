@@ -33,8 +33,8 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.currentPowerUp = 'thunder';
-	this.storedPowerUp = MovingObject.NORMAL;
+	this.currentPowerUp = 'spark';
+	this.storedPowerUp = 'normal';
 	this.health = 5;
 	this.lastHurt = 0;
 
@@ -222,7 +222,7 @@ Kirby.prototype.manageAnimations = function() {
 	else {
 		this.getSmall();
 
-		if (this.acting && this.empty) {
+		if (this.acting && this.empty && this.currentPowerUp == 'normal') {
 			this.animations.play('inhale');
 		}
 		else if (!this.isMoving) {
@@ -269,7 +269,7 @@ Kirby.prototype.releasePowerUp = function(){
 		if (this.lostPowerUp != null){
 			this.lostPowerUp.destroy();
 		}
-		this.lostPowerUp = new LostPowerUp(this.game, this.x, this.y, 'starAttack', this.currentPowerUp, this);
+		this.lostPowerUp = new LostPowerUp(this.game, this.x, this.y, this);
 		this.currentPowerUp = 'normal';
 		this.lostPowerUpCount = 1;
 	}
@@ -277,8 +277,47 @@ Kirby.prototype.releasePowerUp = function(){
 
 // TODO: fill
 Kirby.prototype.act = function () {
+	if (this.currentPowerUp == 'normal'){
+		if (!this.empty && this.keySpace.enable){
+			this.empty = true;
+			this.invincible = false;
+			if (this.attack != null){
+				this.attack.destroy(this);
+			}
+			this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+		}
+	}
 
-	switch(this.currentPowerUp){
+	else if (this.currentPowerUp == 'stone'){
+		if (!this.invincible){
+			this.invincible = true;
+			this.canMove = false;
+			this.keySpace.enable = false;
+			this.body.velocity.x = 0;
+			this.body.velocity.y = 300;
+		}
+		else if (this.invincible){
+			this.invincible = false;
+			this.canMove = true;
+		}
+	}
+
+	else if (this.currentPowerUp == 'spark' || this.currentPowerUp == 'thunder' || this.currentPowerUp == 'fire') {
+		if (this.attack != null){
+			this.attack.destroy(this);
+		}
+		this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
+		this.canMove = false;
+	}
+
+	else if (this.currentPowerUp == 'knife'){
+		if (this.attack != null){
+			this.attack.destroy(this);
+		}
+		this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+	}
+
+	/*switch(this.currentPowerUp){
 		case 'normal':
 			if (!this.empty && this.keySpace.enable){
 				this.empty = true;
@@ -286,7 +325,7 @@ Kirby.prototype.act = function () {
 				if (this.attack != null){
 					this.attack.destroy(this);
 				}
-				this.attack = new Bullet(this.game, this.x, this.y, 'starAttack', this.facingRight, 5, true);
+				this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
 			}
 			break;
 
@@ -308,13 +347,14 @@ Kirby.prototype.act = function () {
 			if (this.attack != null){
 				this.attack.destroy(this);
 			}
-			this.attack = new Aura(this.game, this.x, this.y, 'starAttack', this.facingRight, 5, true, this);
+			this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
 			this.canMove = false;
 		break;
 
 		default:
 			break;
 	}	
+	*/
 }
 
 

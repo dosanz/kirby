@@ -9,7 +9,13 @@ var Enemy = require('./enemy.js');
   create: function () {
 
     // TODO: Add buttons make it beautiful etc
+        // go back to level selection button
+        // quit/back to main menu button
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(function(){this.game.paused = !this.game.paused;}, this);
+
+
+    // level change test
+    // this.input.keyboard.addKey (Phaser.Keyboard.P).onDown.add(function(){this.game.state.start('level1');}, this);
     
     //this.input.keyboard.addKey (Phaser.Keyboard.R).onDown.add(this.restart(), this);
     // var logo = this.game.add.sprite(
@@ -21,6 +27,8 @@ var Enemy = require('./enemy.js');
     // meter a kirby en el mundo
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
+
+    this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
     this.attack
     this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, 'enemy');
