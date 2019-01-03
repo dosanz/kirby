@@ -25,6 +25,7 @@ var PreloaderScene = {
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16);
+    this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);

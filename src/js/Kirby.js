@@ -60,6 +60,7 @@ function Kirby (game, x, y) {
 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+
 }
 
 
@@ -167,19 +168,64 @@ Kirby.prototype.pause = function(){
 	this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
 }
 
+
+// Kirby.prototype.loadAnimations = function() {
+// 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
+// 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+// 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+// 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
+// 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+// }
+
+
+// Kirby.prototype.loadFatAnimations = function() {
+// 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
+// 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
+// 	this.fly = this.animations.add('fly', [8, 9], 3, true);
+// }
+
+
+Kirby.prototype.getFat = function() {
+	this.loadTexture('fatKirby');
+	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
+	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
+	this.fly = this.animations.add('fly', [8, 9], 3, true);
+}
+
+
+Kirby.prototype.getSmall = function() {
+	this.prototype.loadTexture.call(this, 'kirby');
+	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
+	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
+	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+	this.animations.play('idle');
+}
+
+
 Kirby.prototype.manageAnimations = function() {
-	if (this.acting && this.empty) {
-		this.animations.play('inhale');
-	}
-	else if (!this.isMoving) {
-		this.animations.play('idle');
+	if (this.flying) {
+		this.prototype.getFat.call(this);
+		this.animations.play('fly');
 	}
 	else {
-		if (this.grounded) {
-			this.animations.play('walk');
-		}
+		this.prototype.getSmall.call(this);
+
+		// if (this.acting && this.empty) {
+		// 	this.animations.play('inhale');
+		// }
+		// else if (!this.isMoving) {
+		// 	this.animations.play('idle');
+		// }
+		// else {
+		// 	if (this.grounded) {
+		// 		this.animations.play('walk');
+		// 	}
+		// }
 	}
 }
+
 
 Kirby.prototype.eat = function(powerUp){
 	this.storedPowerUp = powerUp;

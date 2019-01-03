@@ -61,6 +61,7 @@ function Kirby (game, x, y) {
 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+
 }
 
 
@@ -168,19 +169,64 @@ Kirby.prototype.pause = function(){
 	this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
 }
 
+
+// Kirby.prototype.loadAnimations = function() {
+// 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
+// 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+// 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+// 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
+// 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+// }
+
+
+// Kirby.prototype.loadFatAnimations = function() {
+// 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
+// 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
+// 	this.fly = this.animations.add('fly', [8, 9], 3, true);
+// }
+
+
+Kirby.prototype.getFat = function() {
+	this.loadTexture('fatKirby');
+	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
+	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
+	this.fly = this.animations.add('fly', [8, 9], 3, true);
+}
+
+
+Kirby.prototype.getSmall = function() {
+	this.prototype.loadTexture.call(this, 'kirby');
+	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
+	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
+	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
+	this.animations.play('idle');
+}
+
+
 Kirby.prototype.manageAnimations = function() {
-	if (this.acting && this.empty) {
-		this.animations.play('inhale');
-	}
-	else if (!this.isMoving) {
-		this.animations.play('idle');
+	if (this.flying) {
+		this.prototype.getFat.call(this);
+		this.animations.play('fly');
 	}
 	else {
-		if (this.grounded) {
-			this.animations.play('walk');
-		}
+		this.prototype.getSmall.call(this);
+
+		// if (this.acting && this.empty) {
+		// 	this.animations.play('inhale');
+		// }
+		// else if (!this.isMoving) {
+		// 	this.animations.play('idle');
+		// }
+		// else {
+		// 	if (this.grounded) {
+		// 		this.animations.play('walk');
+		// 	}
+		// }
 	}
 }
+
 
 Kirby.prototype.eat = function(powerUp){
 	this.storedPowerUp = powerUp;
@@ -654,7 +700,7 @@ function LostPowerUp(game, x, y, spriteName, powerUp, kirby) {
     }
     
     this.game.world.addChild(this);
-    this.game.time.events.add(Phaser.Timer.SECOND * 2, function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);
@@ -724,6 +770,7 @@ var PreloaderScene = {
     this.game.load.image('logo', 'images/phaser.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16);
+    this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
@@ -793,7 +840,9 @@ var Enemy = require('./enemy.js');
   var PlayScene = {
   create: function () {
 
+    // TODO: Add buttons make it beautiful etc
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(function(){this.game.paused = !this.game.paused;}, this);
+    
     //this.input.keyboard.addKey (Phaser.Keyboard.R).onDown.add(this.restart(), this);
     // var logo = this.game.add.sprite(
     //   this.game.world.centerX, this.game.world.centerY, 'logo');
