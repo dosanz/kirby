@@ -70,15 +70,15 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.game.time.now);
+	console.log(this.grounded);
 	MovingObject.prototype.stop.call(this);
 	Kirby.prototype.manageInput.call(this);
 	Kirby.prototype.manageAnimations.call(this);
 
-	if (this.attack != null){
-		MovingObject.prototype.move.call(this.attack, this.attack.speed);
-    	Attack.prototype.damage.call(this.attack);
-	}
+	//if (this.attack != null){
+	//	MovingObject.prototype.move.call(this.attack, this.attack.speed);
+    //	Attack.prototype.damage.call(this.attack);
+	//}
 	
 	if (this.body.onFloor()) {
 		this.grounded = true;
@@ -164,25 +164,20 @@ Kirby.prototype.manageInput = function () {
 	}
 }
 
-Kirby.prototype.pause = function(){
-	this.game.physics.arcade.isPaused = (this.game.physics.arcade.isPaused) ? false : true;
+Kirby.prototype.loadAnimations = function() {
+ 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
+ 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
+ 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
+	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
+ 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
 }
 
 
-// Kirby.prototype.loadAnimations = function() {
-// 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
-// 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
-// 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
-// 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
-// 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
-// }
-
-
-// Kirby.prototype.loadFatAnimations = function() {
-// 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
-// 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
-// 	this.fly = this.animations.add('fly', [8, 9], 3, true);
-// }
+ Kirby.prototype.loadFatAnimations = function() {
+ 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
+ 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
+	this.fly = this.animations.add('fly', [8, 9], 3, true);
+}
 
 
 Kirby.prototype.getFat = function() {
@@ -190,39 +185,51 @@ Kirby.prototype.getFat = function() {
 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
 	this.fly = this.animations.add('fly', [8, 9], 3, true);
+	this.body.width = 24;    this.body.height = 24;
 }
 
 
 Kirby.prototype.getSmall = function() {
-	this.prototype.loadTexture.call(this, 'kirby');
+	this.loadTexture('kirby');
 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
 	this.jump = this.animations.add('jump', [8, 9, 10, 11], 1, false);
 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
 	this.animations.play('idle');
+	this.body.width = 16;    this.body.height = 16;	 
 }
 
 
 Kirby.prototype.manageAnimations = function() {
-	if (this.flying) {
-		this.prototype.getFat.call(this);
-		this.animations.play('fly');
+	if (!this.empty) {
+		this.getFat();
+
+		if (this.isMoving && this.grounded){
+			this.animations.play('fatWalk');
+		}
+		else if (!this.isMoving){
+			this.animations.play('fatIdle');
+		}
+
+		else if (!this.grounded && this.isMoving) {
+			this.animations.play('fly');
+		}
 	}
 	else {
-		this.prototype.getSmall.call(this);
+		this.getSmall();
 
-		// if (this.acting && this.empty) {
-		// 	this.animations.play('inhale');
-		// }
-		// else if (!this.isMoving) {
-		// 	this.animations.play('idle');
-		// }
-		// else {
-		// 	if (this.grounded) {
-		// 		this.animations.play('walk');
-		// 	}
-		// }
+		if (this.acting && this.empty) {
+			this.animations.play('inhale');
+		}
+		else if (!this.isMoving) {
+			this.animations.play('idle');
+		}
+		else {
+			if (this.grounded) {
+				this.animations.play('walk');
+			}
+		}
 	}
 }
 
