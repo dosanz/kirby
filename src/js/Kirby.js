@@ -29,7 +29,7 @@ function Kirby (game, x, y) {
 	this.lostPowerUp = null;
 	this.lostPowerUpCount = 0;
 	this.movementSpeed = GROUND_SPEED;
-	this.jumpHeight = 120;
+	this.jumpHeight = 125;
 	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
@@ -47,6 +47,7 @@ function Kirby (game, x, y) {
 	this.isMoving = false;
 	this.acting = false;
 	this.canMove = true;
+	this.jumping = false;
 
 	this.facingRight = true;
 	this.invincible = false;
@@ -63,12 +64,18 @@ function Kirby (game, x, y) {
 	// KEY: XY -- X = Big|Small   Y = Normal|Thunder|...     
 	this.SNidle = this.animations.add('SNidle', Phaser.Animation.generateFrameNames('SNidle', 1, 4), 2, true);
 	this.SNwalk = this.animations.add('SNwalk', Phaser.Animation.generateFrameNames('SNwalk', 1, 4), 5, true);
-	this.SNjump = this.animations.add('SNjump', Phaser.Animation.generateFrameNames('SNjump', 1, 4), 1, false);
+	this.SNjump = this.animations.add('SNjump', Phaser.Animation.generateFrameNames('SNjump', 1, 4), 5, false);
 	this.SNinhaleStart = this.animations.add('SNinhaleStart', Phaser.Animation.generateFrameNames('SNinhaleStart', 1, 2), 4, false);
-	this.SNinhale = this.animations.add('SNinhale', Phaser.Animation.generateFrameNames('SNinhale', 1, 2), 4, true);
+	this.SNinhale = this.animations.add('SNinhale', Phaser.Animation.generateFrameNames('SNinhale', 3, 4), 4, true);
 	this.Bidle = this.animations.add('Bidle', Phaser.Animation.generateFrameNames('Bidle', 1, 4), 2, true);
 	this.Bwalk = this.animations.add('Bwalk', Phaser.Animation.generateFrameNames('Bwalk', 1, 4), 5, true);
 	this.BNfly = this.animations.add('BNfly', Phaser.Animation.generateFrameNames('BNfly', 1, 2), 3, true);
+
+	this.STidle = this.animations.add('STidle', Phaser.Animation.generateFrameNames('STidle', 1, 4), 2, true);
+	this.STwalk = this.animations.add('STwalk', Phaser.Animation.generateFrameNames('STwalk', 1, 4), 5, true);
+	this.STjump = this.animations.add('STjump', Phaser.Animation.generateFrameNames('STjump', 1, 4), 5, false);
+	this.STattack = this.animations.add('STattack', Phaser.Animation.generateFrameNames('STattack', 1, 2), 2, false);
+	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
 }
 
 
@@ -90,7 +97,7 @@ Kirby.prototype.update = function () {
 	if (this.body.onFloor()) {
 		this.grounded = true;
 		if (this.flying) {
-			this.body.y += 9;
+			this.body.y += 9; // so it doesn't "float" when it turns small 
 		}
 	}
 	else {
@@ -105,6 +112,7 @@ Kirby.prototype.manageInput = function () {
 		this.acting = false;
 		this.canFly = false;
 		this.flying = false;
+		this.jumping = false;
 		this.movementSpeed = GROUND_SPEED;
 		this.body.gravity.y = GROUND_GRAVITY;
 	}
@@ -129,10 +137,12 @@ Kirby.prototype.manageInput = function () {
 	if (this.keyW.isDown && this.canMove) {
 		if (this.canFly) {
 			this.flying = true;
+			this.jumping = false;
 			this.body.gravity.y = AIR_GRAVITY;
 			this.jump();
 		}
 		else if (this.grounded) {
+			this.jumping = true;
 			this.jump();
 		}
 	}
@@ -214,19 +224,69 @@ Kirby.prototype.manageAnimations = function() {
 
 		if (this.flying) {
 			this.body.width = 24;    this.body.height = 24;
-			this.animations.play('BNfly');
+			Kirby.prototype.animateFly.call(this, this.currentPowerUp);
 		}
-		if (this.acting && this.empty && this.currentPowerUp == 'normal') {
+		else if (this.acting && this.empty && this.currentPowerUp == 'normal') {
 			this.animations.play('SNinhale');
 		}
 		else if (!this.isMoving) {
-			this.animations.play('SNidle');
+			Kirby.prototype.animateSmallIdle.call(this, this.currentPowerUp);
 		}
 		else {
 			if (this.grounded) {
-				this.animations.play('SNwalk');
+				Kirby.prototype.animateSmallWalk.call(this, this.currentPowerUp);
+			}
+			else {
+				Kirby.prototype.animateSmallJump.call(this, this.currentPowerUp);
 			}
 		}
+	}
+}
+
+
+Kirby.prototype.animateSmallIdle = function(powerUp) {
+	if (powerUp == 'thunder') {
+		this.animations.play('STidle');
+	} // TODO: add else-if's before the final else for the rest of power ups
+	else { // animates 'normal' and anything we still dont have 
+		this.animations.play('SNidle');
+	}
+}
+
+
+Kirby.prototype.animateSmallWalk = function(powerUp) {
+	if (powerUp == 'thunder') {
+		this.animations.play('STwalk');
+	} 
+	else { // animates 'normal' and anything we still dont have 
+		this.animations.play('SNwalk');
+	}
+}
+
+
+Kirby.prototype.animateSmallJump = function(powerUp) {
+	if (powerUp == 'thunder') {
+		this.animations.play('STjump');
+	} 
+	else { // animates 'normal' and anything we still dont have 
+		this.animations.play('SNjump');
+	}
+}
+
+
+Kirby.prototype.animateSmallAttack = function(powerUp) {
+	if (powerUp == 'thunder') {
+		this.animations.play('STattack');
+	}
+}
+
+
+Kirby.prototype.animateFly = function(powerUp) {
+	if (powerUp == 'thunder') {
+		this.animations.play('BTfly');
+	} 
+	else { // animates 'normal' and anything we still dont have 
+		this.animations.play('BNfly');
 	}
 }
 
