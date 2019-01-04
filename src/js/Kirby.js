@@ -1,9 +1,6 @@
 'use strict';
 
-var GameObject = require('./gameObject.js');
 var MovingObject = require('./movingObject.js');
-var Character = require('./character.js');
-var Attack = require('./attack.js');
 var Bullet = require('./bullet.js');
 var Aura = require('./aura.js');
 var LostPowerUp = require('./lostPowerUp');
@@ -36,6 +33,7 @@ function Kirby (game, x, y) {
 
 	this.currentPowerUp = 'spark';
 	this.storedPowerUp = 'normal';
+	this.tag = 'kirby';
 	this.health = 5;
 	this.lastHurt = 0;
 
@@ -48,6 +46,7 @@ function Kirby (game, x, y) {
 	this.acting = false;
 	this.canMove = true;
 	this.jumping = false;
+	this.justAttacked = false;
 
 	this.facingRight = true;
 	this.invincible = false;
@@ -85,6 +84,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
+	console.log(this.invincible);
 	this.stop();
 	this.manageInput();
 	this.manageAnimations();
@@ -160,12 +160,14 @@ Kirby.prototype.manageInput = function () {
 		}
 		// add else if grounded: smooshed down sprite
 	}
-	if (this.keySpace.isDown) {
+	if (this.keySpace.isDown && this.keySpace.enable == true) {
 		if (this.currentPowerUp == 'normal')
 		{
-			this.stop();
-			this.acting = true;
-			this.act();
+				this.stop();
+				if (!this.flying){
+					this.acting = true;
+				}
+				this.act();
 		}
 
 		else {
@@ -326,6 +328,7 @@ Kirby.prototype.releasePowerUp = function(){
 		this.lostPowerUp = new LostPowerUp(this.game, this.x, this.y, this);
 		this.currentPowerUp = 'normal';
 		this.lostPowerUpCount = 1;
+		this.keySpace.enable = false;
 	}
 }
 
@@ -334,11 +337,12 @@ Kirby.prototype.act = function () {
 	if (this.currentPowerUp == 'normal'){
 		if (!this.empty && this.keySpace.enable){
 			this.empty = true;
-			this.invincible = false;
+			this.storedPowerUp = 'normal';
 			if (this.attack != null){
 				this.attack.destroy(this);
 			}
 			this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+			this.keySpace.enable = false;
 		}
 	}
 
@@ -361,6 +365,7 @@ Kirby.prototype.act = function () {
 			this.attack.destroy(this);
 		}
 		this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
+		this.invincible = true;
 		this.canMove = false;
 	}
 

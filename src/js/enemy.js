@@ -4,9 +4,13 @@ var GameObject = require('./gameObject.js');
 var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
 var Kirby = require('./Kirby.js');
+var Aura = require('./aura.js');
+var Bullet = require('./bullet.js');
+
 
 const FIRST_ENEMY = 2;
 const DEAD_ANIM = 150;
+const ACT = 2000;
 
 function Enemy (game, x, y, ability, kirby){
 	// set different values depending on the enemy type ----------------
@@ -33,6 +37,8 @@ function Enemy (game, x, y, ability, kirby){
 
 	this.actTimer = 0; //
 
+	this.attacks = null;
+
 	if (this.x > this.kirby.x){
 		this.facingRight = false;
 	}
@@ -46,6 +52,8 @@ function Enemy (game, x, y, ability, kirby){
 	this.acts = false;
 	//this.isHurt = false;
 	this.tag = 'enemy';
+
+	this.actLoop = this.game.time.events.loop(ACT, function(){this.act();}, this);
 
 	this.setAnimations();
 }
@@ -133,27 +141,39 @@ Enemy.prototype.die = function(){
 	if (!this.beingAbsorbed){
 		this.animations.play('hurt');
 		this.game.time.events.add(DEAD_ANIM, function(){this.kill();}, this);
+		this.game.time.events.remove(this.actLoop);
 	}
 	else {
+		this.game.time.events.remove(this.actLoop);
 		this.kill();
 	}
 }
 
-// Enemy.prototype.act() = function(){
-//	switch (this.powerUp){
-//		case normal:
-//		...
-//	}
-// }
+Enemy.prototype.act = function(){
+	if (!this.beingAbsorbed){
+		if (this.currentPowerUp == 'normal'){
+			this.normal();
+		}
+		else if (this.currentPowerUp == 'thunder'){
+			this.thunder();
+		}
+	}
+}
 
 Enemy.prototype.normal = function() {
-	this.body.velocity.y = -1000;
-	console.log('pk');
+	this.body.velocity.y = -100;
 }
 
 
 Enemy.prototype.fire = function() {
-	console.log('fire!!');
+}
+
+Enemy.prototype.thunder = function() {
+	if (this.attacks != null){
+		this.attacks.destroy(this);
+	}
+	// this.attacks = new Aura(this.game, this.x, this.y, 5, false, this);
+	this.attacks = new Bullet(this.game, this.x, this.y, 5, false, this);
 }
 
 module.exports = Enemy;

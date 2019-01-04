@@ -6,6 +6,7 @@ const LIFE_TIME = 500;
 
 function Aura(game, x, y, power, kirbyBool, attacker){
     this.attacker = attacker;
+    this.power = power;
 
     this.flip = 1;
 
@@ -34,7 +35,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
 
     this.scale.x *= this.flip;
     this.body.disable;
-    this.game.time.events.add(LIFE_TIME, function(){this.attacker.canMove = true; this.kill();}, this);
+    this.game.time.events.add(LIFE_TIME, function(){this.die();}, this);
     this.animations.play('mainAnim');
 }
 
@@ -49,7 +50,7 @@ Aura.prototype.update = function(){
 Aura.prototype.checkCollisions = function(enemy){
     if(this.checkOverlap(enemy)){
         enemy.die();
-    };
+    }
 }
 
 Aura.prototype.checkOverlap = function(enemy){
@@ -57,6 +58,21 @@ Aura.prototype.checkOverlap = function(enemy){
     var auraBounds = this.getBounds();
 
     return Phaser.Rectangle.intersects(enemyBounds, auraBounds);
+}
+
+Aura.prototype.collideWithKirby = function(kirby){
+    if(this.checkOverlap(kirby)){
+        kirby.getHurt(this.power);
+    }
+}
+
+Aura.prototype.die = function(){
+    if (this.attacker.tag == 'kirby'){
+        this.attacker.canMove = true;
+        this.attacker.invincible = false;
+    }
+
+    this.destroy();
 }
 
 module.exports = Aura;

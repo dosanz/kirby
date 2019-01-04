@@ -38,6 +38,8 @@ var PreloaderScene = {
     this.game.load.spritesheet('fireAttack', 'images/fire.png', 16, 16);
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 16, 16);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 16, 16);
+
+    //this.game.load.tilemap('prueba', 'pruebasTiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function () {

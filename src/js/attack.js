@@ -1,8 +1,5 @@
 // TODO: make better sprites
 'use strict'
-var Character = require('./character.js');
-var Enemy = require('./enemy.js');
-var Kirby = require('./Kirby.js');
 var MovingObject = require ('./movingObject.js');
 
 function Attack(game, x, y, spriteName, power, kirby) {
@@ -31,19 +28,15 @@ Attack.prototype.damage = function(){
             }
             count++;
         }
-        /* 
-        if (!this.kirby){
-            var player = this.game.world.children[1];
-            this.game.physics.arcade.collide(this, player, this.collideWithKirby(kirby, this));
-        }
-            
-        });*/
     }
-    //else if (!this.kirby){
-    //}
-    // if attack collides with enemy ---- enemy dies and the bullet is killed
-    // else if collides with the world or is out of the camera ---- the bullet is killed
-    // else if after a few seconds the bullet isn't killed ---- the bullet is killed
+
+    if (!this.kirby){
+        var player = this.game.world.children[1];
+        if(this.game.physics.arcade.collide(this, player) == true){
+            this.collideWithKirby(player);
+
+        }
+    }
 }
 
 module.exports = Attack;
