@@ -28,7 +28,8 @@ var PreloaderScene = {
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('playButton', 'images/playButton.png');
     this.game.load.image('instrButton', 'images/instructionsButton.png');
-    this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
+    //this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
+    this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
