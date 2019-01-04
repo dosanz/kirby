@@ -18,7 +18,7 @@ Character.prototype = Object.create(MovingObject.prototype);
 Character.prototype.constructor = Character;
 
 Character.prototype.beingEaten = function(){
-	if (this.kirby.currentPowerUp == 'normal' && this.kirby.acting && this.kirby.empty){
+	if (this.kirby.currentPowerUp == 'normal' && this.kirby.acting && this.kirby.empty && this.kirby.grounded){
 		if (!this.kirby.facingRight && this.edible && ((this.x < this.kirby.x) && (this.x >= this.kirby.x - this.kirby.swallowRange))){
 			this.beingAbsorbed = true;
 			this.moveToKirby();

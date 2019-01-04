@@ -72,6 +72,9 @@ Aura.prototype.die = function(){
         this.attacker.invincible = false;
     }
 
+    else{
+        this.attacker.attackAnim = false;
+    }
     this.destroy();
 }
 

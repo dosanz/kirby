@@ -84,7 +84,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.invincible);
 	this.stop();
 	this.manageInput();
 	this.manageAnimations();
@@ -164,7 +163,7 @@ Kirby.prototype.manageInput = function () {
 		if (this.currentPowerUp == 'normal')
 		{
 				this.stop();
-				if (!this.flying){
+				if (this.grounded){
 					this.acting = true;
 				}
 				this.act();
