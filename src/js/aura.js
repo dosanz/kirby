@@ -23,15 +23,28 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     if (this.attacker.currentPowerUp == 'thunder'){
         Attack.call(this, game, x, y, 'thunderAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5], 10, true);
+        this.verticalOffset = 16;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
     else if (this.attacker.currentPowerUp == 'fire'){
         Attack.call(this, game, x, y, 'fireAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5], 10, true);
+        this.verticalOffset = 16;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
     else if (this.attacker.currentPowerUp == 'spark'){
         Attack.call(this, game, x, y, 'sparkAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2], 10, true);
+        this.verticalOffset = 24;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
+    this.body.collideWorldBounds = false;
 
     this.scale.x *= this.flip;
     this.body.disable;
@@ -43,21 +56,20 @@ Aura.prototype = Object.create(Attack.prototype);
 Aura.prototype.constructor = Aura;
 
 Aura.prototype.update = function(){
-    this.y = this.attacker.y;
+    this.y = this.attacker.y -this.verticalOffset;
     this.damage();
 }
 
 Aura.prototype.checkCollisions = function(enemy){
     if(this.checkOverlap(enemy)){
-        enemy.die();
+        if (enemy.tag == 'enemy'){
+            enemy.die();
+        }
+        else if (enemy.tag == 'boss'){
+            console.log('oye');
+            enemy.hurt(this.power);
+        }
     }
-}
-
-Aura.prototype.checkOverlap = function(enemy){
-    var enemyBounds = enemy.getBounds();
-    var auraBounds = this.getBounds();
-
-    return Phaser.Rectangle.intersects(enemyBounds, auraBounds);
 }
 
 Aura.prototype.collideWithKirby = function(kirby){
@@ -72,7 +84,7 @@ Aura.prototype.die = function(){
         this.attacker.invincible = false;
     }
 
-    else{
+    else if (this.attacker.tag == 'enemy'){
         this.attacker.attackAnim = false;
     }
     this.destroy();

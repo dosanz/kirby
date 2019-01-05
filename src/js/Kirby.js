@@ -31,7 +31,7 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.currentPowerUp = 'spark';
+	this.currentPowerUp = 'thunder';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
 	this.health = 5;
@@ -340,7 +340,7 @@ Kirby.prototype.act = function () {
 			if (this.attack != null){
 				this.attack.destroy(this);
 			}
-			this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+			this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
 			this.keySpace.enable = false;
 		}
 	}

@@ -32,7 +32,7 @@ function Kirby (game, x, y) {
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
 
-	this.currentPowerUp = 'spark';
+	this.currentPowerUp = 'thunder';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
 	this.health = 5;
@@ -85,7 +85,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.invincible);
 	this.stop();
 	this.manageInput();
 	this.manageAnimations();
@@ -342,7 +341,7 @@ Kirby.prototype.act = function () {
 			if (this.attack != null){
 				this.attack.destroy(this);
 			}
-			this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+			this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
 			this.keySpace.enable = false;
 		}
 	}
@@ -434,7 +433,7 @@ module.exports = Kirby;
 
 // 	}
 // }
-},{"./aura.js":3,"./bullet.js":4,"./lostPowerUp":9,"./movingObject.js":12}],2:[function(require,module,exports){
+},{"./aura.js":3,"./bullet.js":5,"./lostPowerUp":11,"./movingObject.js":14}],2:[function(require,module,exports){
 // TODO: make better sprites
 'use strict'
 var MovingObject = require ('./movingObject.js');
@@ -459,7 +458,7 @@ Attack.prototype.damage = function(){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
-                if (enemy.tag == 'enemy'){
+                if (enemy.tag == 'enemy' || enemy.tag == 'boss'){
                     this.checkCollisions(enemy, this);
                 }
             }
@@ -476,8 +475,15 @@ Attack.prototype.damage = function(){
     }
 }
 
+Attack.prototype.checkOverlap = function(enemy){
+    var enemyBounds = enemy.getBounds();
+    var attackBounds = this.getBounds();
+
+    return Phaser.Rectangle.intersects(enemyBounds, attackBounds);
+}
+
 module.exports = Attack;
-},{"./movingObject.js":12}],3:[function(require,module,exports){
+},{"./movingObject.js":14}],3:[function(require,module,exports){
 'use strict'
 
 var Attack = require ('./attack.js');
@@ -503,15 +509,28 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     if (this.attacker.currentPowerUp == 'thunder'){
         Attack.call(this, game, x, y, 'thunderAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5], 10, true);
+        this.verticalOffset = 16;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
     else if (this.attacker.currentPowerUp == 'fire'){
         Attack.call(this, game, x, y, 'fireAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5], 10, true);
+        this.verticalOffset = 16;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
     else if (this.attacker.currentPowerUp == 'spark'){
         Attack.call(this, game, x, y, 'sparkAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2], 10, true);
+        this.verticalOffset = 24;
+        if(!kirbyBool){
+            this.verticalOffset -= 8;
+        }
     }
+    this.body.collideWorldBounds = false;
 
     this.scale.x *= this.flip;
     this.body.disable;
@@ -523,21 +542,20 @@ Aura.prototype = Object.create(Attack.prototype);
 Aura.prototype.constructor = Aura;
 
 Aura.prototype.update = function(){
-    this.y = this.attacker.y;
+    this.y = this.attacker.y -this.verticalOffset;
     this.damage();
 }
 
 Aura.prototype.checkCollisions = function(enemy){
     if(this.checkOverlap(enemy)){
-        enemy.die();
+        if (enemy.tag == 'enemy'){
+            enemy.die();
+        }
+        else if (enemy.tag == 'boss'){
+            console.log('oye');
+            enemy.hurt(this.power);
+        }
     }
-}
-
-Aura.prototype.checkOverlap = function(enemy){
-    var enemyBounds = enemy.getBounds();
-    var auraBounds = this.getBounds();
-
-    return Phaser.Rectangle.intersects(enemyBounds, auraBounds);
 }
 
 Aura.prototype.collideWithKirby = function(kirby){
@@ -552,7 +570,7 @@ Aura.prototype.die = function(){
         this.attacker.invincible = false;
     }
 
-    else{
+    else if (this.attacker.tag == 'enemy'){
         this.attacker.attackAnim = false;
     }
     this.destroy();
@@ -560,6 +578,29 @@ Aura.prototype.die = function(){
 
 module.exports = Aura;
 },{"./attack.js":2}],4:[function(require,module,exports){
+'use strict';
+
+var GameObject = require('./gameObject.js');
+var Character = require('./character.js');
+var Kirby = require('./Kirby.js');
+var Enemy = require('./enemy.js');
+var TreeBoss = require('./treeBoss.js');
+
+  var BossLevel = {
+  create: function () {
+    this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
+
+    this.player = new Kirby(this.game, 100, 10, 'kirby');
+    this.game.world.addChild(this.player);
+
+    this.boss = new TreeBoss(this.game, 200, 240, this.player);
+    this.game.world.addChild(this.boss);
+
+  }
+};
+
+module.exports = BossLevel;
+},{"./Kirby.js":1,"./character.js":6,"./enemy.js":7,"./gameObject.js":9,"./treeBoss.js":16}],5:[function(require,module,exports){
 'use strict'
 
 var Attack = require ('./attack.js');
@@ -603,7 +644,15 @@ Bullet.prototype.update = function(){
 }
 
 Bullet.prototype.checkCollisions = function(enemy){
-    this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+    if (enemy.tag == 'enemy'){
+        this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+    }
+
+    else if(enemy.tag == 'boss'){
+        if(this.checkOverlap(this, enemy)){
+            this.collideWithBoss(enemy);
+        }
+    }
 }
 
 Bullet.prototype.collideWithEnemy = function(enemy){
@@ -620,8 +669,15 @@ Bullet.prototype.collideWithKirby = function(kirby){
     this.animations.play('crash');
 }
 
+Bullet.prototype.collideWithBoss = function(boss){
+    boss.hurt(this.power);
+    this.speed = 0;
+    this.dying = true;
+    this.animations.play('crash');
+}
+
 module.exports = Bullet;
-},{"./attack.js":2}],5:[function(require,module,exports){
+},{"./attack.js":2}],6:[function(require,module,exports){
 'use strict';
 
 var MovingObject = require('./movingObject.js');
@@ -663,7 +719,7 @@ Character.prototype.moveToKirby = function(){
 }
 
 module.exports = Character;
-},{"./movingObject.js":12}],6:[function(require,module,exports){
+},{"./movingObject.js":14}],7:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -765,21 +821,14 @@ Enemy.prototype.update = function(){
 		this.scale.x = -1 * this.originalScale;
 	}
 
-	if (this.currentPowerUp != 'normal'){
-		console.log(this.attackAnim);
-	}
-	/*if (!this.beingAbsorbed){
-		this.stop();
-	}*/
-
 	if (this.isHurt || this.staysIdle){
 		this.stop();
-		if(this.staysIdle && !this.attackAnim){
+		if(this.staysIdle && !this.attackAnim && !this.isHurt){
 			this.animations.play('idle');
 		}
 	}
 
-	else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed){
+	else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed && !this.isHurt){
 		this.animations.play('walk');
 		this.move(this.speed);
 	}
@@ -801,6 +850,8 @@ Enemy.prototype.update = function(){
 			this.acts = false;
 		}
 	}
+
+	// TODO -------------------------- add if enemy collides with walls this.speed = -this.speed
 	
 	this.beingEaten();
 	this.collideWithKirby();
@@ -825,12 +876,13 @@ Enemy.prototype.die = function(){
 	if (!this.beingAbsorbed){
 		this.animations.play('hurt');
 		this.isHurt = true;
-		this.game.time.events.add(DEAD_ANIM, function(){this.kill();}, this);
+		this.stop();
+		this.game.time.events.add(DEAD_ANIM, function(){this.destroy();}, this);
 		//this.game.time.events.remove(this.actLoop);
 	}
 	else {
 		//this.game.time.events.remove(this.actLoop);
-		this.kill();
+		this.destroy();
 	}
 }
 
@@ -863,7 +915,62 @@ Enemy.prototype.thunder = function() {
 }
 
 module.exports = Enemy;
-},{"./Kirby.js":1,"./aura.js":3,"./bullet.js":4,"./character.js":5,"./gameObject.js":7,"./movingObject.js":12}],7:[function(require,module,exports){
+},{"./Kirby.js":1,"./aura.js":3,"./bullet.js":5,"./character.js":6,"./gameObject.js":9,"./movingObject.js":14}],8:[function(require,module,exports){
+// for the tree boss fight, they fall and when they touch the ground bounce towards kirby
+
+'use strict';
+
+var Character = require('./character.js');
+
+function FallingEnemy (game, x, y, spriteName, kirby, edible){
+    Character.call(this, game, x, y, spriteName);
+    this.kirby = kirby;
+    this.edible = edible;
+    this.baseSpeed = 10;
+    this.bounceHeight = -100;
+    this.speedSet = false;
+    this.game.world.addChild(this);
+}
+
+FallingEnemy.prototype = Object.create(Character.prototype);
+FallingEnemy.prototype.constructor = FallingEnemy;
+
+FallingEnemy.prototype.update = function(){
+    if (this.body.onFloor()) {
+        if (this.speedSet == false){
+            if (this.x > this.kirby.x){
+                this.baseSpeed = -20;
+            }
+            this.speedSet = true;
+
+        }
+        else{
+            this.body.velocity.x = this.baseSpeed;
+            this.body.velocity.y = this.bounceHeight;
+        }
+    }
+    
+    this.beingEaten();
+    this.collideWithKirby();
+}
+
+FallingEnemy.prototype.collideWithKirby = function(){
+	if (this.game.physics.arcade.collide(this, this.kirby)){
+		if (this.beingAbsorbed == true){
+			this.kirby.eat(this.powerUp, this.kirby);
+			this.destroy();
+		}
+		else if (this.kirby.invincible == true){
+			this.destroy();
+		}
+		else if (this.kirby.invincible == false){
+			this.kirby.getHurt(1, this.kirby);
+		}
+	}
+}
+
+module.exports = FallingEnemy;
+},{"./character.js":6}],9:[function(require,module,exports){
 'use strict';
 
 function GameObject(game, x, y, spriteName) {
@@ -883,7 +990,7 @@ GameObject.prototype.constructor = GameObject;
 
 
 module.exports = GameObject;
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // level "template"
 'use strict';
 
@@ -900,7 +1007,7 @@ var Enemy = require('./enemy.js');
 };
 
 module.exports = Level1;
-},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./gameObject.js":7}],9:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":6,"./enemy.js":7,"./gameObject.js":9}],11:[function(require,module,exports){
 'use strict';
 
 var Character = require('./character.js');
@@ -956,13 +1063,13 @@ LostPowerUp.prototype.collideWithKirby = function(){
 }
 
 module.exports = LostPowerUp;
-},{"./character.js":5}],10:[function(require,module,exports){
+},{"./character.js":6}],12:[function(require,module,exports){
 'use strict';
 
 var PlayScene = require('./play_scene.js');
 var MainMenu = require('./mainMenu.js');
 var Level1 = require('./level1.js');
-
+var BossLevel = require('./bossLevel.js');
 
 var BootScene = {
   preload: function () {
@@ -987,16 +1094,18 @@ var PreloaderScene = {
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('playButton', 'images/playButton.png');
     this.game.load.image('instrButton', 'images/instructionsButton.png');
+    this.game.load.image('boss', 'images/boss.png');
+    this.game.load.image('apple', 'images/apple.png');
     //this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
     this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
-    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 24, 24);
-    this.game.load.spritesheet('fireAttack', 'images/fire.png', 16, 16);
-    this.game.load.spritesheet('knifeAttack', 'images/knife.png', 16, 16);
-    this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 16, 16);
+    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 48, 48);
+    this.game.load.spritesheet('fireAttack', 'images/fire.png', 24, 24);
+    this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
+    this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
 
     //this.game.load.tilemap('prueba', 'pruebasTiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
   },
@@ -1004,7 +1113,7 @@ var PreloaderScene = {
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('mainMenu');
+    this.game.state.start('bossLevel');
   }
 };
 
@@ -1019,12 +1128,13 @@ window.onload = function () {
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
   game.state.add('level1', Level1);
+  game.state.add('bossLevel', BossLevel);
   game.state.add('mainMenu', MainMenu);
 
   game.state.start('boot');
 };
 
-},{"./level1.js":8,"./mainMenu.js":11,"./play_scene.js":13}],11:[function(require,module,exports){
+},{"./bossLevel.js":4,"./level1.js":10,"./mainMenu.js":13,"./play_scene.js":15}],13:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -1041,7 +1151,7 @@ var Enemy = require('./enemy.js');
 };
 
 module.exports = MainMenu;
-},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./gameObject.js":7}],12:[function(require,module,exports){
+},{"./Kirby.js":1,"./character.js":6,"./enemy.js":7,"./gameObject.js":9}],14:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -1064,7 +1174,7 @@ MovingObject.prototype.stop = function () {
 }
 
 module.exports = MovingObject;
-},{"./gameObject.js":7}],13:[function(require,module,exports){
+},{"./gameObject.js":9}],15:[function(require,module,exports){
 'use strict';
 
 var GameObject = require('./gameObject.js');
@@ -1115,4 +1225,61 @@ var Enemy = require('./enemy.js');
 };
 
 module.exports = PlayScene;
-},{"./Kirby.js":1,"./character.js":5,"./enemy.js":6,"./gameObject.js":7}]},{},[10]);
+},{"./Kirby.js":1,"./character.js":6,"./enemy.js":7,"./gameObject.js":9}],16:[function(require,module,exports){
+'use strict';
+
+var GameObject = require('./gameObject.js');
+var FallingObject = require('./fallingEnemy.js');
+
+function TreeBoss(game, x, y, kirby) {
+    GameObject.call(this, game, x, y, 'boss');
+    this.body.immovable = true;
+    this.tag = 'boss';
+    this.actTimer = 0;
+    this.invincibleTime = 0;
+    this.health = 20;
+    this.kirby = kirby;
+    this.body.collideWorldBounds = true;
+    this.attacks = new Array(3);
+}
+
+TreeBoss.prototype = Object.create(GameObject.prototype);
+TreeBoss.prototype.constructor = TreeBoss;
+
+TreeBoss.prototype.update = function(){
+    this.collideWithKirby();
+    this.act();
+}
+
+TreeBoss.prototype.collideWithKirby = function(){
+	if (this.game.physics.arcade.collide(this, this.kirby)){
+		if (this.kirby.invincible == true){
+			this.getHurt();
+		}
+		else if (this.kirby.invincible == false){
+			this.kirby.getHurt(1, this.kirby);
+		}
+	}
+}
+
+TreeBoss.prototype.hurt = function(damage){
+    if (this.game.time.now > this.invincibleTime){
+        this.invincibleTime += 4000;
+        this.health -= damage;
+    }
+}
+
+TreeBoss.prototype.act = function(){
+    if (this.game.time.now > this.actTimer){
+        this.actTimer += 6000;
+        for (var i = 0; i < this.attacks.length; i++){
+            if (this.attacks[i] != null){
+                this.attacks[i].destroy();
+            }
+            this.attacks[i] = new FallingObject(this.game, Math.floor((Math.random() * 256) + 0), 0, 'apple', this.kirby, true);
+        }
+    }
+}
+
+module.exports = TreeBoss;
+},{"./fallingEnemy.js":8,"./gameObject.js":9}]},{},[12]);

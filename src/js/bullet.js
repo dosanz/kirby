@@ -41,7 +41,15 @@ Bullet.prototype.update = function(){
 }
 
 Bullet.prototype.checkCollisions = function(enemy){
-    this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+    if (enemy.tag == 'enemy'){
+        this.game.physics.arcade.collide(this, enemy, this.collideWithEnemy(enemy, this));
+    }
+
+    else if(enemy.tag == 'boss'){
+        if(this.checkOverlap(this, enemy)){
+            this.collideWithBoss(enemy);
+        }
+    }
 }
 
 Bullet.prototype.collideWithEnemy = function(enemy){
@@ -53,6 +61,13 @@ Bullet.prototype.collideWithEnemy = function(enemy){
 
 Bullet.prototype.collideWithKirby = function(kirby){
     kirby.getHurt(this.power);
+    this.speed = 0;
+    this.dying = true;
+    this.animations.play('crash');
+}
+
+Bullet.prototype.collideWithBoss = function(boss){
+    boss.hurt(this.power);
     this.speed = 0;
     this.dying = true;
     this.animations.play('crash');

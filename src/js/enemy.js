@@ -101,12 +101,12 @@ Enemy.prototype.update = function(){
 
 	if (this.isHurt || this.staysIdle){
 		this.stop();
-		if(this.staysIdle && !this.attackAnim){
+		if(this.staysIdle && !this.attackAnim && !this.isHurt){
 			this.animations.play('idle');
 		}
 	}
 
-	else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed){
+	else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed && !this.isHurt){
 		this.animations.play('walk');
 		this.move(this.speed);
 	}
@@ -154,12 +154,13 @@ Enemy.prototype.die = function(){
 	if (!this.beingAbsorbed){
 		this.animations.play('hurt');
 		this.isHurt = true;
-		this.game.time.events.add(DEAD_ANIM, function(){this.kill();}, this);
+		this.stop();
+		this.game.time.events.add(DEAD_ANIM, function(){this.destroy();}, this);
 		//this.game.time.events.remove(this.actLoop);
 	}
 	else {
 		//this.game.time.events.remove(this.actLoop);
-		this.kill();
+		this.destroy();
 	}
 }
 

@@ -22,7 +22,7 @@ Attack.prototype.damage = function(){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
-                if (enemy.tag == 'enemy'){
+                if (enemy.tag == 'enemy' || enemy.tag == 'boss'){
                     this.checkCollisions(enemy, this);
                 }
             }
@@ -37,6 +37,13 @@ Attack.prototype.damage = function(){
 
         }
     }
+}
+
+Attack.prototype.checkOverlap = function(enemy){
+    var enemyBounds = enemy.getBounds();
+    var attackBounds = this.getBounds();
+
+    return Phaser.Rectangle.intersects(enemyBounds, attackBounds);
 }
 
 module.exports = Attack;

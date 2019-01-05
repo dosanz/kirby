@@ -11,6 +11,7 @@ function FallingEnemy (game, x, y, spriteName, kirby, edible){
     this.baseSpeed = 10;
     this.bounceHeight = -100;
     this.speedSet = false;
+    this.game.world.addChild(this);
 }
 
 FallingEnemy.prototype = Object.create(Character.prototype);
@@ -29,17 +30,20 @@ FallingEnemy.prototype.update = function(){
             this.body.velocity.x = this.baseSpeed;
             this.body.velocity.y = this.bounceHeight;
         }
-	}
+    }
+    
+    this.beingEaten();
+    this.collideWithKirby();
 }
 
 FallingEnemy.prototype.collideWithKirby = function(){
 	if (this.game.physics.arcade.collide(this, this.kirby)){
 		if (this.beingAbsorbed == true){
 			this.kirby.eat(this.powerUp, this.kirby);
-			this.die();
+			this.destroy();
 		}
 		else if (this.kirby.invincible == true){
-			this.die();
+			this.destroy();
 		}
 		else if (this.kirby.invincible == false){
 			this.kirby.getHurt(1, this.kirby);
