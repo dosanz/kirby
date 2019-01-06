@@ -38,6 +38,9 @@ Bullet.prototype.update = function(){
     if (!this.dying){
         this.damage();
     }
+    if(!this.inCamera){
+        this.destroy();
+    }
 }
 
 Bullet.prototype.checkCollisions = function(enemy){

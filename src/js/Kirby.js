@@ -14,12 +14,16 @@ const INVINCIBLE_TIME = 1500;
 const ACT_TIMER = 1000;
 const FLY_TIMER = 500;
 const JUMP_TIMER = 250;
+const INITIAL_HEALTH = 5;
 
 const FLIP_FACTOR = -1;
 
 function Kirby (game, x, y) {
 	MovingObject.call(this, game, x, y, 'kirby');
 	this.anchor.setTo(0.5, 1);
+
+	this.initialX = x;
+	this.initialY = y;
 
 	this.body.allowGravity = true;
 	this.body.gravity.y = 400;
@@ -38,7 +42,8 @@ function Kirby (game, x, y) {
 	this.currentPowerUp = 'spark';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
-	this.health = 5;
+	this.health = INITIAL_HEALTH;
+	this.lifes = 3;
 	this.lastHurt = 0;
 
 	// control bools --------------------
@@ -99,11 +104,6 @@ Kirby.prototype.update = function () {
 	this.stop();
 	this.manageInput();
 	this.manageAnimations();
-
-	//if (this.attack != null){
-	//	MovingObject.prototype.move.call(this.attack, this.attack.speed);
-    //	Attack.prototype.damage.call(this.attack);
-	//}
 	
 	if (this.body.onFloor()) {
 		this.grounded = true;
@@ -334,7 +334,16 @@ Kirby.prototype.getHurt = function (damage){
 		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.health -= damage;
-
+		if (this.health <= 0){
+			this.lifes--;
+			//if (this.lifes < 0){ GAME OVER state} else{}
+			this.reset();
+			for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
+				if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
+					this.game.world.children[i].reset();
+				}
+			}
+		}
 		this.releasePowerUp();
 	}
 }
@@ -396,45 +405,23 @@ Kirby.prototype.act = function () {
 		}
 		this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
 	}
+}
 
-	/*switch(this.currentPowerUp){
-		case 'normal':
-			if (!this.empty && this.keySpace.enable){
-				this.empty = true;
-				this.invincible = false;
-				if (this.attack != null){
-					this.attack.destroy(this);
-				}
-				this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
-			}
-			break;
-
-		case 'stone':
-			if (!this.invincible){
-				this.invincible = true;
-				this.canMove = false;
-				this.keySpace.enable = false;
-				this.body.velocity.x = 0;
-				this.body.velocity.y = 300;
-			}
-			else if (this.invincible){
-				this.invincible = false;
-				this.canMove = true;
-		}
-		break;
-
-		case 'thunder':
-			if (this.attack != null){
-				this.attack.destroy(this);
-			}
-			this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
-			this.canMove = false;
-		break;
-
-		default:
-			break;
-	}	
-	*/
+Kirby.prototype.reset = function(){
+	this.x = this.initialX;
+	this.y = this.initialY;
+	this.currentPowerUp = 'normal';
+	this.storedPowerUp = 'normal';
+	if (this.attack != null){
+		this.attack.destroy();
+		this.attack = null;
+	}
+	if (this.lostPowerUp != null){
+		this.lostPowerUp.destroy();
+		this.lostPowerUp = null;
+		this.lostPowerUpCount = 0;
+	}
+	this.health = INITIAL_HEALTH;
 }
 
 

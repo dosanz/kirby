@@ -12,6 +12,7 @@ var TreeBoss = require('./treeBoss.js');
 
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
+    this.game.kirbyIndex = 1;
 
     this.boss = new TreeBoss(this.game, 200, 240, this.player);
     this.game.world.addChild(this.boss);

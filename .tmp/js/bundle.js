@@ -15,12 +15,16 @@ const INVINCIBLE_TIME = 1500;
 const ACT_TIMER = 1000;
 const FLY_TIMER = 500;
 const JUMP_TIMER = 250;
+const INITIAL_HEALTH = 5;
 
 const FLIP_FACTOR = -1;
 
 function Kirby (game, x, y) {
 	MovingObject.call(this, game, x, y, 'kirby');
 	this.anchor.setTo(0.5, 1);
+
+	this.initialX = x;
+	this.initialY = y;
 
 	this.body.allowGravity = true;
 	this.body.gravity.y = 400;
@@ -39,7 +43,8 @@ function Kirby (game, x, y) {
 	this.currentPowerUp = 'spark';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
-	this.health = 5;
+	this.health = INITIAL_HEALTH;
+	this.lifes = 3;
 	this.lastHurt = 0;
 
 	// control bools --------------------
@@ -100,11 +105,6 @@ Kirby.prototype.update = function () {
 	this.stop();
 	this.manageInput();
 	this.manageAnimations();
-
-	//if (this.attack != null){
-	//	MovingObject.prototype.move.call(this.attack, this.attack.speed);
-    //	Attack.prototype.damage.call(this.attack);
-	//}
 	
 	if (this.body.onFloor()) {
 		this.grounded = true;
@@ -335,7 +335,16 @@ Kirby.prototype.getHurt = function (damage){
 		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.health -= damage;
-
+		if (this.health <= 0){
+			this.lifes--;
+			//if (this.lifes < 0){ GAME OVER state} else{}
+			this.reset();
+			for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
+				if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
+					this.game.world.children[i].reset();
+				}
+			}
+		}
 		this.releasePowerUp();
 	}
 }
@@ -397,45 +406,23 @@ Kirby.prototype.act = function () {
 		}
 		this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
 	}
+}
 
-	/*switch(this.currentPowerUp){
-		case 'normal':
-			if (!this.empty && this.keySpace.enable){
-				this.empty = true;
-				this.invincible = false;
-				if (this.attack != null){
-					this.attack.destroy(this);
-				}
-				this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
-			}
-			break;
-
-		case 'stone':
-			if (!this.invincible){
-				this.invincible = true;
-				this.canMove = false;
-				this.keySpace.enable = false;
-				this.body.velocity.x = 0;
-				this.body.velocity.y = 300;
-			}
-			else if (this.invincible){
-				this.invincible = false;
-				this.canMove = true;
-		}
-		break;
-
-		case 'thunder':
-			if (this.attack != null){
-				this.attack.destroy(this);
-			}
-			this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
-			this.canMove = false;
-		break;
-
-		default:
-			break;
-	}	
-	*/
+Kirby.prototype.reset = function(){
+	this.x = this.initialX;
+	this.y = this.initialY;
+	this.currentPowerUp = 'normal';
+	this.storedPowerUp = 'normal';
+	if (this.attack != null){
+		this.attack.destroy();
+		this.attack = null;
+	}
+	if (this.lostPowerUp != null){
+		this.lostPowerUp.destroy();
+		this.lostPowerUp = null;
+		this.lostPowerUpCount = 0;
+	}
+	this.health = INITIAL_HEALTH;
 }
 
 
@@ -618,6 +605,7 @@ var TreeBoss = require('./treeBoss.js');
 
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
+    this.game.kirbyIndex = 1;
 
     this.boss = new TreeBoss(this.game, 200, 240, this.player);
     this.game.world.addChild(this.boss);
@@ -666,6 +654,9 @@ Bullet.prototype.update = function(){
     this.move(this.speed);
     if (!this.dying){
         this.damage();
+    }
+    if(!this.inCamera){
+        this.destroy();
     }
 }
 
@@ -765,6 +756,10 @@ const DEAD_ANIM = 150;
 const ACT = 2000;
 
 function Enemy (game, x, y, ability, kirby){
+
+	this.initialX = x;
+	this.initialY = y;
+
 	// set different values depending on the enemy type ----------------
     if (ability === 'normal') { // waddle dee
 		Character.call(this, game, x, y, 'waddleDee', true);
@@ -844,48 +839,53 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
-	console.log(this.game.world.children);
-	if (this.facingRight){
-		this.scale.x = this.originalScale;
-	}
-	else if (!this.facingRight){
-		this.scale.x = -1 * this.originalScale;
-	}
-
-	if (this.isHurt || this.staysIdle){
-		this.stop();
-		if(this.staysIdle && !this.attackAnim && !this.isHurt){
-			this.animations.play('idle');
+	if (this.inCamera == true){
+		if (this.facingRight){
+			this.scale.x = this.originalScale;
 		}
-	}
-
-	else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed && !this.isHurt){
-		this.animations.play('walk');
-		this.move(this.speed);
-	}
-	if (this.game.time.now > this.actTimer && !this.beingAbsorbed){   // TODO: fix this so it repeats a cycle of acting, staying idle, acting...
-		if (!this.acts) {
-			this.staysIdle = false;
+		else if (!this.facingRight){
+			this.scale.x = -1 * this.originalScale;
 		}
 
-		this.actTimer = this.game.time.now + this.actDelay;
-		// calls the enemy act
-		if (!this.staysIdle) { 
-			this.act();
-			this.staysIdle = true;
-			this.acts = true;
-		}
-		else {
+		if (this.isHurt || this.staysIdle){
 			this.stop();
-			this.staysIdle = false;
-			this.acts = false;
+			if(this.staysIdle && !this.attackAnim && !this.isHurt){
+				this.animations.play('idle');
+			}
 		}
-	}
 
+		else if (this.body.onFloor() && !this.staysIdle && !this.beingAbsorbed && !this.isHurt){
+			this.animations.play('walk');
+			this.move(this.speed);
+		}
+		if (this.game.time.now > this.actTimer && !this.beingAbsorbed){   // TODO: fix this so it repeats a cycle of acting, staying idle, acting...
+			if (!this.acts) {
+				this.staysIdle = false;
+			}
+
+			this.actTimer = this.game.time.now + this.actDelay;
+			// calls the enemy act
+			if (!this.staysIdle) { 
+				this.act();
+				this.staysIdle = true;
+				this.acts = true;
+			}
+			else {
+				this.stop();
+				this.staysIdle = false;
+				this.acts = false;
+			}
+		}
 	// TODO -------------------------- add if enemy collides with walls this.speed = -this.speed
 	
 	this.beingEaten();
 	this.collideWithKirby();
+	}
+
+	else{
+		this.reset();
+	}
+
 }
 
 Enemy.prototype.collideWithKirby = function(){
@@ -929,6 +929,20 @@ Enemy.prototype.act = function(){
 	}
 }
 
+Enemy.prototype.reset = function(){
+	this.x = this.initialX;
+	this.y = this.initialY;
+	if (this.attacks != null){
+		this.attacks.destroy();
+		this.attacks = null;
+	}
+	this.isHurt = false;
+	this.beingAbsorbed = false;
+	this.staysIdle = false;
+	this.acts = false;
+	this.attackAnim = false;
+}
+
 Enemy.prototype.normal = function() {
 	this.body.velocity.y = -100;
 }
@@ -943,7 +957,7 @@ Enemy.prototype.thunder = function() {
 	}
 	this.attackAnim = true;
 	this.animations.play('attack');
-	this.attacks = new Aura(this.game, this.x, this.y, 5, false, this);
+	this.attacks = new Aura(this.game, this.x, this.y, 1, false, this);
 }
 
 module.exports = Enemy;
@@ -1175,7 +1189,7 @@ var PreloaderScene = {
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('mainMenu');
+    this.game.state.start('bossLevel');
   }
 };
 
@@ -1290,12 +1304,7 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee2);
     this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee3);
-  },
-  
-  pauseGame: function(){
-    this.game.paused = !this.game.paused;
-  },
-
+  }
 };
 
 module.exports = PlayScene;
@@ -1305,13 +1314,15 @@ module.exports = PlayScene;
 var GameObject = require('./gameObject.js');
 var FallingObject = require('./fallingEnemy.js');
 
+const INITIAL_HEALTH = 20;
+
 function TreeBoss(game, x, y, kirby) {
     GameObject.call(this, game, x, y, 'boss');
     this.body.immovable = true;
     this.tag = 'boss';
     this.actTimer = 0;
     this.invincibleTime = 0;
-    this.health = 20;
+    this.health = INITIAL_HEALTH;
     this.kirby = kirby;
     this.body.collideWorldBounds = true;
     this.attacks = new Array(3);
@@ -1353,6 +1364,15 @@ TreeBoss.prototype.act = function(){
             this.attacks[i] = new FallingObject(this.game, Math.floor((Math.random() * 256) + 0), 0, 'apple', this.kirby, true);
         }
     }
+}
+
+TreeBoss.prototype.reset = function(){
+    for (var i = 0; i < this.attacks.length; i++){
+        if (this.attacks[i] != null){
+            this.attacks[i].kill();
+        }
+    }
+    this.health = INITIAL_HEALTH;
 }
 
 module.exports = TreeBoss;
