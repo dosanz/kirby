@@ -1096,7 +1096,14 @@ var PreloaderScene = {
     this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
-    //this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
+    
+    this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
+    this.game.load.image('grassBackground', 'images/bg-grass.png');
+    this.game.load.image('grassTilesPhaser', 'tiled/tile-grass.png');
+    this.game.load.tilemap('grassLevel', 'tiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
+
+    this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
+
     this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
@@ -1107,7 +1114,6 @@ var PreloaderScene = {
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
 
-    //this.game.load.tilemap('prueba', 'pruebasTiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function () {
@@ -1199,7 +1205,15 @@ var Enemy = require('./enemy.js');
     //   this.game.world.centerX, this.game.world.centerY, 'logo');
     // logo.anchor.setTo(0.5, 0.5);
 
-    this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
+    // Map test -- TODO: maybe migrate to a specific class? like level1 or grassLevel
+    this.game.stage.backgroundColor = 'ffffff';
+    this.bg = this.game.add.image(0, 0, 'grassBackground');
+    this.bg.fixedToCamera = true;
+    this.map = this.game.add.tilemap('grassLevel');
+    this.map.addTilesetImage('grass', 'grassTilesPhaser');
+    this.floor = this.map.createLayer('floor');
+    this.map.setCollisionBetween(1, 2000, true, 'floor');
+    this.floor.resizeWorld();
 
     // meter a kirby en el mundo
     this.player = new Kirby(this.game, 100, 10, 'kirby');

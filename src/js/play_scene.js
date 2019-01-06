@@ -22,7 +22,15 @@ var Enemy = require('./enemy.js');
     //   this.game.world.centerX, this.game.world.centerY, 'logo');
     // logo.anchor.setTo(0.5, 0.5);
 
-    this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
+    // Map test -- TODO: maybe migrate to a specific class? like level1 or grassLevel
+    this.game.stage.backgroundColor = 'ffffff';
+    this.bg = this.game.add.image(0, 0, 'grassBackground');
+    this.bg.fixedToCamera = true;
+    this.map = this.game.add.tilemap('grassLevel');
+    this.map.addTilesetImage('grass', 'grassTilesPhaser');
+    this.floor = this.map.createLayer('floor');
+    this.map.setCollisionBetween(1, 2000, true, 'floor');
+    this.floor.resizeWorld();
 
     // meter a kirby en el mundo
     this.player = new Kirby(this.game, 100, 10, 'kirby');

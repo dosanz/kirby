@@ -30,7 +30,14 @@ var PreloaderScene = {
     this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
-    //this.game.load.spritesheet('kirby', 'images/kirby-small.png', 16, 16, 20);
+    
+    this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
+    this.game.load.image('grassBackground', 'images/bg-grass.png');
+    this.game.load.image('grassTilesPhaser', 'tiled/tile-grass.png');
+    this.game.load.tilemap('grassLevel', 'tiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
+
+    this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
+
     this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
@@ -41,7 +48,6 @@ var PreloaderScene = {
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
 
-    //this.game.load.tilemap('prueba', 'pruebasTiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function () {
