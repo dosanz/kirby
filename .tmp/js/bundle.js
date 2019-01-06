@@ -1109,8 +1109,7 @@ var Enemy = require('./enemy.js');
 
   var Level1 = {
   create: function () {
-    //this.map = this.game.add.tilemap('prueba');
-
+    
   }
 };
 
@@ -1283,8 +1282,10 @@ var Enemy = require('./enemy.js');
   var MainMenu = {
   create: function () {
     this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
-    this.button1 = this.game.add.button(this.game.world.centerX - 72, this.game.world.centerY - 50, 'playButton', function(){this.game.state.start('play');}, this, 2, 1, 0);
-    this.button2 = this.game.add.button(this.game.world.centerX - 72, this.game.world.centerY + 50, 'instrButton', function(){console.log('hola');}, this, 2, 1, 0);
+    this.button1 = this.game.add.button(this.game.world.centerX, this.game.world.centerY - 50, 'playButton', function(){this.game.state.start('play');}, this, 2, 1, 0);
+    this.button2 = this.game.add.button(this.game.world.centerX, this.game.world.centerY + 50, 'instrButton', function(){console.log('hola');}, this, 2, 1, 0);
+    this.button1.anchor.setTo(0.5, 0.5);
+    this.button2.anchor.setTo(0.5, 0.5);
   }
 };
 
@@ -1331,6 +1332,9 @@ var Enemy = require('./enemy.js');
         // quit/back to main menu button
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
       function(){this.game.paused = !this.game.paused;}, this);
+
+    this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
+      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
 
 
     // level change test

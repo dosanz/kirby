@@ -15,6 +15,9 @@ var Enemy = require('./enemy.js');
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
       function(){this.game.paused = !this.game.paused;}, this);
 
+    this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
+      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
+
 
     // level change test
     // this.input.keyboard.addKey (Phaser.Keyboard.P).onDown.add(function(){this.game.state.start('level1');}, this);

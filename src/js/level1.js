@@ -8,8 +8,7 @@ var Enemy = require('./enemy.js');
 
   var Level1 = {
   create: function () {
-    //this.map = this.game.add.tilemap('prueba');
-
+    
   }
 };
 
