@@ -67,7 +67,7 @@ var PreloaderScene = {
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('bossLevel');
+    this.game.state.start('mainMenu');
   }
 };
 

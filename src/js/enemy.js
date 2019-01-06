@@ -198,6 +198,14 @@ Enemy.prototype.reset = function(){
 	this.staysIdle = false;
 	this.acts = false;
 	this.attackAnim = false;
+	if (this.x > this.kirby.x){
+		this.facingRight = false;
+		this.speed = -this.baseSpeed;
+	}
+	else if (this.x < this.kirby.x){
+		this.facingRight = true;
+		this.speed = this.baseSpeed;
+	}
 }
 
 Enemy.prototype.normal = function() {

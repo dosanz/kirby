@@ -48,7 +48,7 @@ function Kirby (game, x, y) {
 
 	// control bools --------------------
 	this.empty = true;
-	this.grounded = true;
+	this.grounded = false;
 	this.flying = false;
 	this.canFly = false;
 	this.isMoving = false;
@@ -60,6 +60,9 @@ function Kirby (game, x, y) {
 	this.facingRight = true;
 	this.invincible = false;
 	this.full = false;
+
+	this.endedLevel = false;
+	this.startedLevel = true;
 
 	// input keys ------------------------
 	this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -101,8 +104,22 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	this.stop();
-	this.manageInput();
+	if (!this.endedLevel && !this.startedLevel){
+		this.stop();
+		this.manageInput();
+	}
+	else if (this.endedLevel){
+		this.levelChange();
+	}
+	else if (this.startedLevel){
+		this.body.velocity.x = 50;
+		this.body.velocity.y = 200;
+		if (this.grounded){
+			this.startedLevel = false;
+			this.jump();
+			this.body.velocity.x = 200;
+		}
+	}
 	this.manageAnimations();
 	
 	if (this.body.onFloor()) {
@@ -424,6 +441,18 @@ Kirby.prototype.reset = function(){
 	this.health = INITIAL_HEALTH;
 }
 
+Kirby.prototype.heal = function (healthBoost){
+	this.health += healthBoost;
+	if (this.health > INITIAL_HEALTH){
+		this.health = INITIAL_HEALTH;
+	}
+}
+
+Kirby.prototype.levelChange = function(){
+	this.game.camera.unfollow();
+	this.body.velocity.x = -100;
+	this.body.velocity.y = -10;
+}
 
 
 module.exports = Kirby;
