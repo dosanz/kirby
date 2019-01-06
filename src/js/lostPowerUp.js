@@ -55,7 +55,10 @@ LostPowerUp.prototype.collideWithKirby = function(){
             this.kirby.eat(this.powerUp, this.kirby);
             this.kirby.lostPowerUpCount = 0;
             this.destroy();
-		}
+        }
+        else if(this.kirby.y > this.y){
+            this.body.velocity.y = -100;
+        }
 	}
 }
 

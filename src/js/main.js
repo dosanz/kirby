@@ -43,7 +43,7 @@ var PreloaderScene = {
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
-    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 48, 48);
+    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 48, 36);
     this.game.load.spritesheet('fireAttack', 'images/fire.png', 24, 24);
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);

@@ -11,7 +11,8 @@ var Enemy = require('./enemy.js');
     // TODO: Add buttons make it beautiful etc
         // go back to level selection button
         // quit/back to main menu button
-    this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(function(){this.game.paused = !this.game.paused;}, this);
+    this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
+      function(){this.game.paused = !this.game.paused;}, this);
 
 
     // level change test
@@ -35,6 +36,7 @@ var Enemy = require('./enemy.js');
     // meter a kirby en el mundo
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
+    this.game.kirbyIndex = 2;
 
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
@@ -47,12 +49,7 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee2);
     this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, 'enemy');
     this.game.world.addChild(this.waddleDee3);
-  },
-  
-  pauseGame: function(){
-    this.game.paused = !this.game.paused;
-  },
-
+  }
 };
 
 module.exports = PlayScene;

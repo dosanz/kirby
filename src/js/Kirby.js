@@ -322,8 +322,10 @@ Kirby.prototype.jump = function () {
 }
 
 Kirby.prototype.swallow = function(){
-	this.powerUpSound.play();
-	this.currentPowerUp = this.storedPowerUp;
+	if (this.storedPowerUp != 'normal'){
+		this.powerUpSound.play();
+		this.currentPowerUp = this.storedPowerUp;
+	}
 	this.empty = true;
 }
 
@@ -364,6 +366,7 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'stone'){
+		this.jump();
 		this.rockTransformSound.play();
 		if (!this.invincible){
 			this.invincible = true;

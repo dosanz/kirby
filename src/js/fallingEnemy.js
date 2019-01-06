@@ -8,8 +8,8 @@ function FallingEnemy (game, x, y, spriteName, kirby, edible){
     Character.call(this, game, x, y, spriteName);
     this.kirby = kirby;
     this.edible = edible;
-    this.baseSpeed = 10;
-    this.bounceHeight = -100;
+    this.baseSpeed = 30;
+    this.bounceHeight = -200;
     this.speedSet = false;
     this.game.world.addChild(this);
 }

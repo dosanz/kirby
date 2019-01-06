@@ -323,8 +323,10 @@ Kirby.prototype.jump = function () {
 }
 
 Kirby.prototype.swallow = function(){
-	this.powerUpSound.play();
-	this.currentPowerUp = this.storedPowerUp;
+	if (this.storedPowerUp != 'normal'){
+		this.powerUpSound.play();
+		this.currentPowerUp = this.storedPowerUp;
+	}
 	this.empty = true;
 }
 
@@ -365,6 +367,7 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'stone'){
+		this.jump();
 		this.rockTransformSound.play();
 		if (!this.invincible){
 			this.invincible = true;
@@ -472,7 +475,7 @@ Attack.prototype.constructor = Attack;
 Attack.prototype.damage = function(){
     if (this.kirby){
         var enemy = null;
-        var count = 3;
+        var count = this.game.kirbyIndex + 1;
         while(enemy == null && count < this.game.world.children.length){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
@@ -486,7 +489,7 @@ Attack.prototype.damage = function(){
     }
 
     if (!this.kirby){
-        var player = this.game.world.children[1];
+        var player = this.game.world.children[this.game.kirbyIndex];
         if(this.game.physics.arcade.collide(this, player) == true){
             this.collideWithKirby(player);
 
@@ -527,7 +530,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
 
     if (this.attacker.currentPowerUp == 'thunder'){
         Attack.call(this, game, x, y, 'thunderAttack', power, kirbyBool);
-        this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5], 10, true);
+        this.anim = this.animations.add('mainAnim', [0,1,2,3,4,5,6,7], 10, true);
         this.verticalOffset = 16;
         if(!kirbyBool){
             this.verticalOffset -= 8;
@@ -546,7 +549,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     else if (this.attacker.currentPowerUp == 'spark'){
         Attack.call(this, game, x, y, 'sparkAttack', power, kirbyBool);
         this.anim = this.animations.add('mainAnim', [0,1,2], 10, true);
-        this.verticalOffset = 24;
+        this.verticalOffset = 20;
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
@@ -555,7 +558,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     this.body.collideWorldBounds = false;
 
     this.scale.x *= this.flip;
-    this.body.disable;
+    this.body.immovable = true;
     this.game.time.events.add(LIFE_TIME, function(){this.die();}, this);
     this.animations.play('mainAnim');
     this.sound.play();
@@ -955,8 +958,8 @@ function FallingEnemy (game, x, y, spriteName, kirby, edible){
     Character.call(this, game, x, y, spriteName);
     this.kirby = kirby;
     this.edible = edible;
-    this.baseSpeed = 10;
-    this.bounceHeight = -100;
+    this.baseSpeed = 30;
+    this.bounceHeight = -200;
     this.speedSet = false;
     this.game.world.addChild(this);
 }
@@ -1094,7 +1097,10 @@ LostPowerUp.prototype.collideWithKirby = function(){
             this.kirby.eat(this.powerUp, this.kirby);
             this.kirby.lostPowerUpCount = 0;
             this.destroy();
-		}
+        }
+        else if(this.kirby.y > this.y){
+            this.body.velocity.y = -100;
+        }
 	}
 }
 
@@ -1145,7 +1151,7 @@ var PreloaderScene = {
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
     this.game.load.spritesheet('starAttack', 'images/star.png', 16, 16);
-    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 48, 48);
+    this.game.load.spritesheet('sparkAttack', 'images/spark.png', 48, 36);
     this.game.load.spritesheet('fireAttack', 'images/fire.png', 24, 24);
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
@@ -1246,7 +1252,8 @@ var Enemy = require('./enemy.js');
     // TODO: Add buttons make it beautiful etc
         // go back to level selection button
         // quit/back to main menu button
-    this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(function(){this.game.paused = !this.game.paused;}, this);
+    this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
+      function(){this.game.paused = !this.game.paused;}, this);
 
 
     // level change test
@@ -1270,6 +1277,7 @@ var Enemy = require('./enemy.js');
     // meter a kirby en el mundo
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
+    this.game.kirbyIndex = 2;
 
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
