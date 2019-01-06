@@ -27,6 +27,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('thunder');
     }
     else if (this.attacker.currentPowerUp == 'fire'){
         Attack.call(this, game, x, y, 'fireAttack', power, kirbyBool);
@@ -35,6 +36,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('fire');
     }
     else if (this.attacker.currentPowerUp == 'spark'){
         Attack.call(this, game, x, y, 'sparkAttack', power, kirbyBool);
@@ -43,6 +45,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('spark');
     }
     this.body.collideWorldBounds = false;
 
@@ -50,6 +53,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     this.body.disable;
     this.game.time.events.add(LIFE_TIME, function(){this.die();}, this);
     this.animations.play('mainAnim');
+    this.sound.play();
 }
 
 Aura.prototype = Object.create(Attack.prototype);

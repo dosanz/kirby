@@ -11,6 +11,8 @@ function Character(game, x, y, spriteName, edible) {
 
 	this.beingAbsorbed = false;
 	this.edible = edible;
+
+	this.hurtSound = this.game.add.audio('hurt');
 	//this.body.collideWorldBounds = true;
 }
 

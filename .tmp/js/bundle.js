@@ -13,6 +13,8 @@ const AIR_GRAVITY = 180;
 const GROUND_GRAVITY = 400;
 const INVINCIBLE_TIME = 1500;
 const ACT_TIMER = 1000;
+const FLY_TIMER = 500;
+const JUMP_TIMER = 250;
 
 const FLIP_FACTOR = -1;
 
@@ -31,8 +33,10 @@ function Kirby (game, x, y) {
 	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
+	this.flyTimer = 0;
+	this.jumpTimer = 0;
 
-	this.currentPowerUp = 'thunder';
+	this.currentPowerUp = 'spark';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
 	this.health = 5;
@@ -76,6 +80,14 @@ function Kirby (game, x, y) {
 	this.STjump = this.animations.add('STjump', Phaser.Animation.generateFrameNames('STjump', 1, 4), 5, false);
 	this.STattack = this.animations.add('STattack', Phaser.Animation.generateFrameNames('STattack', 1, 2), 2, false);
 	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
+
+	this.hurtSound = this.game.add.audio('hurt');
+	this.jumpSound = this.game.add.audio('jump');
+	this.flySound = this.game.add.audio('fly');
+	this.landingSound = this.game.add.audio('landing');
+	this.powerUpSound = this.game.add.audio('powerUp');
+	this.rockTransformSound = this.game.add.audio('rockTransform');
+	this.rockCrashSound = this.game.add.audio('rockCollide');
 }
 
 
@@ -135,13 +147,17 @@ Kirby.prototype.manageInput = function () {
 		this.facingRight = true;
 	}
 	if (this.keyW.isDown && this.canMove) {
-		if (this.canFly) {
+		if (this.canFly && this.flyTimer < this.game.time.now) {
+			this.flyTimer = this.game.time.now + FLY_TIMER;
+			this.flySound.play();
 			this.flying = true;
 			this.jumping = false;
 			this.body.gravity.y = AIR_GRAVITY;
 			this.jump();
 		}
-		else if (this.grounded) {
+		else if (this.grounded && this.jumpTimer < this.game.time.now) {
+			this.jumpTimer = this.game.time.now + JUMP_TIMER;
+			this.jumpSound.play();
 			this.jumping = true;
 			this.jump();
 		}
@@ -307,12 +323,14 @@ Kirby.prototype.jump = function () {
 }
 
 Kirby.prototype.swallow = function(){
+	this.powerUpSound.play();
 	this.currentPowerUp = this.storedPowerUp;
 	this.empty = true;
 }
 
 Kirby.prototype.getHurt = function (damage){
 	if (this.game.time.now > this.lastHurt){
+		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.health -= damage;
 
@@ -347,6 +365,7 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'stone'){
+		this.rockTransformSound.play();
 		if (!this.invincible){
 			this.invincible = true;
 			this.canMove = false;
@@ -453,7 +472,7 @@ Attack.prototype.constructor = Attack;
 Attack.prototype.damage = function(){
     if (this.kirby){
         var enemy = null;
-        var count = 2;
+        var count = 3;
         while(enemy == null && count < this.game.world.children.length){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
@@ -513,6 +532,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('thunder');
     }
     else if (this.attacker.currentPowerUp == 'fire'){
         Attack.call(this, game, x, y, 'fireAttack', power, kirbyBool);
@@ -521,6 +541,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('fire');
     }
     else if (this.attacker.currentPowerUp == 'spark'){
         Attack.call(this, game, x, y, 'sparkAttack', power, kirbyBool);
@@ -529,6 +550,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         if(!kirbyBool){
             this.verticalOffset -= 8;
         }
+        this.sound = this.game.add.audio('spark');
     }
     this.body.collideWorldBounds = false;
 
@@ -536,6 +558,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
     this.body.disable;
     this.game.time.events.add(LIFE_TIME, function(){this.die();}, this);
     this.animations.play('mainAnim');
+    this.sound.play();
 }
 
 Aura.prototype = Object.create(Attack.prototype);
@@ -611,9 +634,8 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
     this.power = power;
     if (this.attacker.currentPowerUp == 'normal'){
         Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
-    }
-    else if (this.attacker.currentPowerUp == 'thunder'){
-        Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
+        this.attackSound = this.game.add.audio('star');
+        this.crashSound = this.game.add.audio('starCrash');
     }
     else if (this.attacker.currentPowerUp == 'knife'){
         Attack.call(this, game, x, y, 'knifeAttack', power, kirbyBool);
@@ -631,6 +653,7 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.destroy();}, this)
     this.animations.play('moving');
+    this.attackSound.play();
 }
 
 Bullet.prototype = Object.create(Attack.prototype);
@@ -660,6 +683,8 @@ Bullet.prototype.collideWithEnemy = function(enemy){
     this.speed = 0;
     this.dying = true;
     this.animations.play('crash');
+    this.attackSound.stop();
+    this.crashSound.play();
 }
 
 Bullet.prototype.collideWithKirby = function(kirby){
@@ -691,6 +716,8 @@ function Character(game, x, y, spriteName, edible) {
 
 	this.beingAbsorbed = false;
 	this.edible = edible;
+
+	this.hurtSound = this.game.add.audio('hurt');
 	//this.body.collideWorldBounds = true;
 }
 
@@ -814,6 +841,7 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
+	console.log(this.game.world.children);
 	if (this.facingRight){
 		this.scale.x = this.originalScale;
 	}
@@ -874,6 +902,7 @@ Enemy.prototype.collideWithKirby = function(){
 
 Enemy.prototype.die = function(){
 	if (!this.beingAbsorbed){
+		this.hurtSound.play();
 		this.animations.play('hurt');
 		this.isHurt = true;
 		this.stop();
@@ -1031,10 +1060,16 @@ function LostPowerUp(game, x, y, kirby) {
     this.moving = this.animations.add('moving', [0,1,2], 20, true);
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
+
+    this.mainSound = this.game.add.audio('star');
+    this.bounceSound = this.game.add.audio('starCollide');
+    this.crashSound = this.game.add.audio('starCrash');
+
     this.animations.play('moving');
 
     this.game.world.addChild(this);
-    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.animations.play('crash');}, this);
+    this.mainSound.play();
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){if (!this.beingAbsorbed){this.crashSound.play();} this.animations.play('crash');}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);
@@ -1044,6 +1079,7 @@ LostPowerUp.prototype.update = function(){
     this.move(this.speed);
 
     if (this.body.onFloor()){
+        this.bounceSound.play();
         this.body.velocity.y = -200;
     }
 
@@ -1057,7 +1093,7 @@ LostPowerUp.prototype.collideWithKirby = function(){
 		if (this.beingAbsorbed == true){
             this.kirby.eat(this.powerUp, this.kirby);
             this.kirby.lostPowerUpCount = 0;
-            this.kill();
+            this.destroy();
 		}
 	}
 }
@@ -1114,12 +1150,26 @@ var PreloaderScene = {
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
 
+    this.game.load.audio('hurt', 'sounds/hurt.wav');
+    this.game.load.audio('fly', 'sounds/fly.wav');
+    this.game.load.audio('jump', 'sounds/jump.wav');
+    this.game.load.audio('landing', 'sounds/landing.wav');
+    this.game.load.audio('powerUp', 'sounds/powerUp.wav');
+    this.game.load.audio('starCollide', 'sounds/starCollide.wav');
+    this.game.load.audio('starCrash', 'sounds/starCrash.wav');
+    this.game.load.audio('rockCollide', 'sounds/rockCollide.wav');
+    this.game.load.audio('rockTransform', 'sounds/rockTransform.wav');
+    this.game.load.audio('star', 'sounds/star.wav');
+    this.game.load.audio('fire', 'sounds/fire.wav');
+    this.game.load.audio('thunder', 'sounds/thunder.wav');
+    this.game.load.audio('spark', 'sounds/spark.wav');
+
   },
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('bossLevel');
+    this.game.state.start('mainMenu');
   }
 };
 
@@ -1164,6 +1214,8 @@ var GameObject = require('./gameObject.js');
 
 function MovingObject(game, x, y, spriteName) {
 	GameObject.call(this, game, x, y, spriteName);
+
+	this.hurtSound = this.game.add.audio('hurt');
 	//this.body.collideWorldBounds = true;
 }
 

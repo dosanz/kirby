@@ -12,6 +12,8 @@ const AIR_GRAVITY = 180;
 const GROUND_GRAVITY = 400;
 const INVINCIBLE_TIME = 1500;
 const ACT_TIMER = 1000;
+const FLY_TIMER = 500;
+const JUMP_TIMER = 250;
 
 const FLIP_FACTOR = -1;
 
@@ -30,8 +32,10 @@ function Kirby (game, x, y) {
 	this.swallowRange = 100;
 	this.originalScale = this.scale.x;
 	this.actTimer = 0;
+	this.flyTimer = 0;
+	this.jumpTimer = 0;
 
-	this.currentPowerUp = 'thunder';
+	this.currentPowerUp = 'spark';
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
 	this.health = 5;
@@ -75,6 +79,14 @@ function Kirby (game, x, y) {
 	this.STjump = this.animations.add('STjump', Phaser.Animation.generateFrameNames('STjump', 1, 4), 5, false);
 	this.STattack = this.animations.add('STattack', Phaser.Animation.generateFrameNames('STattack', 1, 2), 2, false);
 	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
+
+	this.hurtSound = this.game.add.audio('hurt');
+	this.jumpSound = this.game.add.audio('jump');
+	this.flySound = this.game.add.audio('fly');
+	this.landingSound = this.game.add.audio('landing');
+	this.powerUpSound = this.game.add.audio('powerUp');
+	this.rockTransformSound = this.game.add.audio('rockTransform');
+	this.rockCrashSound = this.game.add.audio('rockCollide');
 }
 
 
@@ -134,13 +146,17 @@ Kirby.prototype.manageInput = function () {
 		this.facingRight = true;
 	}
 	if (this.keyW.isDown && this.canMove) {
-		if (this.canFly) {
+		if (this.canFly && this.flyTimer < this.game.time.now) {
+			this.flyTimer = this.game.time.now + FLY_TIMER;
+			this.flySound.play();
 			this.flying = true;
 			this.jumping = false;
 			this.body.gravity.y = AIR_GRAVITY;
 			this.jump();
 		}
-		else if (this.grounded) {
+		else if (this.grounded && this.jumpTimer < this.game.time.now) {
+			this.jumpTimer = this.game.time.now + JUMP_TIMER;
+			this.jumpSound.play();
 			this.jumping = true;
 			this.jump();
 		}
@@ -306,12 +322,14 @@ Kirby.prototype.jump = function () {
 }
 
 Kirby.prototype.swallow = function(){
+	this.powerUpSound.play();
 	this.currentPowerUp = this.storedPowerUp;
 	this.empty = true;
 }
 
 Kirby.prototype.getHurt = function (damage){
 	if (this.game.time.now > this.lastHurt){
+		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.health -= damage;
 
@@ -346,6 +364,7 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'stone'){
+		this.rockTransformSound.play();
 		if (!this.invincible){
 			this.invincible = true;
 			this.canMove = false;

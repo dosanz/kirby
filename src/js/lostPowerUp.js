@@ -21,10 +21,16 @@ function LostPowerUp(game, x, y, kirby) {
     this.moving = this.animations.add('moving', [0,1,2], 20, true);
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.kirby.lostPowerUpCount = 0; this.kill();}, this);
+
+    this.mainSound = this.game.add.audio('star');
+    this.bounceSound = this.game.add.audio('starCollide');
+    this.crashSound = this.game.add.audio('starCrash');
+
     this.animations.play('moving');
 
     this.game.world.addChild(this);
-    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){this.animations.play('crash');}, this);
+    this.mainSound.play();
+    this.game.time.events.add(Phaser.Timer.SECOND + LIFE_TIME, function(){if (!this.beingAbsorbed){this.crashSound.play();} this.animations.play('crash');}, this);
 }
 
 LostPowerUp.prototype = Object.create(Character.prototype);
@@ -34,6 +40,7 @@ LostPowerUp.prototype.update = function(){
     this.move(this.speed);
 
     if (this.body.onFloor()){
+        this.bounceSound.play();
         this.body.velocity.y = -200;
     }
 
@@ -47,7 +54,7 @@ LostPowerUp.prototype.collideWithKirby = function(){
 		if (this.beingAbsorbed == true){
             this.kirby.eat(this.powerUp, this.kirby);
             this.kirby.lostPowerUpCount = 0;
-            this.kill();
+            this.destroy();
 		}
 	}
 }

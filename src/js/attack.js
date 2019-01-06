@@ -17,7 +17,7 @@ Attack.prototype.constructor = Attack;
 Attack.prototype.damage = function(){
     if (this.kirby){
         var enemy = null;
-        var count = 2;
+        var count = 3;
         while(enemy == null && count < this.game.world.children.length){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){

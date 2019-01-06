@@ -92,6 +92,7 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
+	console.log(this.game.world.children);
 	if (this.facingRight){
 		this.scale.x = this.originalScale;
 	}
@@ -152,6 +153,7 @@ Enemy.prototype.collideWithKirby = function(){
 
 Enemy.prototype.die = function(){
 	if (!this.beingAbsorbed){
+		this.hurtSound.play();
 		this.animations.play('hurt');
 		this.isHurt = true;
 		this.stop();

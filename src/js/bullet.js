@@ -8,9 +8,8 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
     this.power = power;
     if (this.attacker.currentPowerUp == 'normal'){
         Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
-    }
-    else if (this.attacker.currentPowerUp == 'thunder'){
-        Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
+        this.attackSound = this.game.add.audio('star');
+        this.crashSound = this.game.add.audio('starCrash');
     }
     else if (this.attacker.currentPowerUp == 'knife'){
         Attack.call(this, game, x, y, 'knifeAttack', power, kirbyBool);
@@ -28,6 +27,7 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.destroy();}, this)
     this.animations.play('moving');
+    this.attackSound.play();
 }
 
 Bullet.prototype = Object.create(Attack.prototype);
@@ -57,6 +57,8 @@ Bullet.prototype.collideWithEnemy = function(enemy){
     this.speed = 0;
     this.dying = true;
     this.animations.play('crash');
+    this.attackSound.stop();
+    this.crashSound.play();
 }
 
 Bullet.prototype.collideWithKirby = function(kirby){

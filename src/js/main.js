@@ -48,12 +48,26 @@ var PreloaderScene = {
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
 
+    this.game.load.audio('hurt', 'sounds/hurt.wav');
+    this.game.load.audio('fly', 'sounds/fly.wav');
+    this.game.load.audio('jump', 'sounds/jump.wav');
+    this.game.load.audio('landing', 'sounds/landing.wav');
+    this.game.load.audio('powerUp', 'sounds/powerUp.wav');
+    this.game.load.audio('starCollide', 'sounds/starCollide.wav');
+    this.game.load.audio('starCrash', 'sounds/starCrash.wav');
+    this.game.load.audio('rockCollide', 'sounds/rockCollide.wav');
+    this.game.load.audio('rockTransform', 'sounds/rockTransform.wav');
+    this.game.load.audio('star', 'sounds/star.wav');
+    this.game.load.audio('fire', 'sounds/fire.wav');
+    this.game.load.audio('thunder', 'sounds/thunder.wav');
+    this.game.load.audio('spark', 'sounds/spark.wav');
+
   },
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
-    this.game.state.start('bossLevel');
+    this.game.state.start('mainMenu');
   }
 };
 
