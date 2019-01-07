@@ -56,11 +56,36 @@ var Enemy = require('./enemy.js');
 
     this.endStar = new EndStar(this.game,500, 200, 'starAttack', this.player);
     this.game.world.addChild(this.endStar);
+
+    // set music
+    this.greenGreensIntro = this.game.add.audio('greenGreensIntro');
+    this.greenGreensLoop = this.game.add.audio('greenGreensLoop');
+
+    this.game.sound.setDecodedCallback([ this.greenGreensIntro, this.greenGreensLoop ], this.start, this);
   },
 
+  start: function(){
+    this.greenGreensIntro.play();
+    this.greenGreensIntro.onStop.add(this.loopMusic, this);
+
+  },
+
+
   update: function(){
-    if (!this.player.inCamera)
-    this.game.state.start('level1');
+    if (!this.player.inCamera) {
+        this.greenGreensLoop.stop();
+        this.game.state.start('bossLevel');
+    }
+    
+
+    this.game.physics.arcade.collide(this.player, this.floor);
+    this.game.physics.arcade.collide(this.waddleDee, this.floor);
+    // TODO: do this for the enemy group too
+  },
+
+  loopMusic: function() {
+    this.greenGreensLoop.loop = true;
+    this.greenGreensLoop.play();
   }
 };
 

@@ -630,15 +630,34 @@ var TreeBoss = require('./treeBoss.js');
 
   var BossLevel = {
   create: function () {
-    this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
+  	// set background and map
+    this.game.stage.backgroundColor = 'ffffff';
+    this.bg = this.game.add.image(0, 0, 'bossBackground');
+    this.bg.fixedToCamera = true;
+    this.map = this.game.add.tilemap('bossTilemap');
+    this.map.addTilesetImage('grass', 'grassTilesPhaser');
+    this.floor = this.map.createLayer('floor');
+    this.map.setCollisionBetween(1, 1000, true, 'floor');
+    this.floor.resizeWorld();
 
+    // set music
+    this.bossMusic = this.game.add.audio('bossMusic');
+    this.bossMusic.loop = true;
+    this.bossMusic.play();
+
+    // add characters
     this.player = new Kirby(this.game, 100, 10, 'kirby');
     this.game.world.addChild(this.player);
     this.game.kirbyIndex = 1;
 
-    this.boss = new TreeBoss(this.game, 200, 240, this.player);
+    this.boss = new TreeBoss(this.game, 232, 0, this.player);
     this.game.world.addChild(this.boss);
 
+  }, 
+
+  update: function(){
+    this.game.physics.arcade.collide(this.player, this.floor);
+    this.game.physics.arcade.collide(this.boss, this.floor);
   }
 };
 
@@ -1216,12 +1235,13 @@ var PreloaderScene = {
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
+    this.game.load.image('bossBackground', 'images/bg-boss.png');
     this.game.load.image('grassTilesPhaser', 'tiled/tile-grass.png');
     this.game.load.tilemap('grassLevel', 'tiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.tilemap('bossTilemap', 'tiled/boss.json', null, Phaser.Tilemap.TILED_JSON);
 
     this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
 
-    this.game.load.atlas('kirby', 'images/kirby.png', 'images/kirby.json');
     this.game.load.spritesheet('fatKirby', 'images/kirby-big.png', 24, 24, 10);
     this.game.load.spritesheet('waddleDee', 'images/waddle-dee.png', 16, 16);
     this.game.load.spritesheet('waddleDoo', 'images/eye-thing.png', 16, 16);
@@ -1244,6 +1264,14 @@ var PreloaderScene = {
     this.game.load.audio('fire', 'sounds/fire.wav');
     this.game.load.audio('thunder', 'sounds/thunder.wav');
     this.game.load.audio('spark', 'sounds/spark.wav');
+
+    this.game.load.audio('greenGreensIntro', ['music/greenGreensIntro.mp3', 'music/greenGreensIntro.ogg']);
+    this.game.load.audio('greenGreensLoop', ['music/greenGreensLoop.mp3', 'music/greenGreensLoop.ogg']);
+    this.game.load.audio('boss-short', ['music/boss-short.mp3', 'music/boss-short.ogg']);
+    this.game.load.audio('bossMusic', ['music/boss.mp3', 'music/boss.ogg']);
+    this.game.load.audio('starMusic', ['music/star.mp3', 'music/star.ogg']);
+    this.game.load.audio('victoryDance', ['music/victory.mp3', 'music/victory.ogg']);
+    this.game.load.audio('defeatMusic', ['music/dead.mp3', 'music/dead.ogg']);
 
   },
 
@@ -1374,11 +1402,36 @@ var Enemy = require('./enemy.js');
 
     this.endStar = new EndStar(this.game,500, 200, 'starAttack', this.player);
     this.game.world.addChild(this.endStar);
+
+    // set music
+    this.greenGreensIntro = this.game.add.audio('greenGreensIntro');
+    this.greenGreensLoop = this.game.add.audio('greenGreensLoop');
+
+    this.game.sound.setDecodedCallback([ this.greenGreensIntro, this.greenGreensLoop ], this.start, this);
   },
 
+  start: function(){
+    this.greenGreensIntro.play();
+    this.greenGreensIntro.onStop.add(this.loopMusic, this);
+
+  },
+
+
   update: function(){
-    if (!this.player.inCamera)
-    this.game.state.start('level1');
+    if (!this.player.inCamera) {
+        this.greenGreensLoop.stop();
+        this.game.state.start('bossLevel');
+    }
+    
+
+    this.game.physics.arcade.collide(this.player, this.floor);
+    this.game.physics.arcade.collide(this.waddleDee, this.floor);
+    // TODO: do this for the enemy group too
+  },
+
+  loopMusic: function() {
+    this.greenGreensLoop.loop = true;
+    this.greenGreensLoop.play();
   }
 };
 
