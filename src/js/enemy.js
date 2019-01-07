@@ -16,16 +16,19 @@ function Enemy (game, x, y, ability, kirby, scene){
 
 	this.initialX = x;
 	this.initialY = y;
+
 	this.scene = scene;
+	this.kirby = kirby; // kirby
+	this.currentPowerUp = ability; // the power up kirby will get when an enemy is eaten
+
+	this.tag = 'enemy';
 
 	// set different values depending on the enemy type ----------------
     if (ability === 'normal') { // waddle dee
 		Character.call(this, game, x, y, 'waddleDee', true);
 		// ADJUST THIS VALUES
-		this.baseSpeed = 48; // speed is diferent depending on the enemy type
-		this.actDelay = 2000; // it might depend on the enemy type (and it should be around 2-3 seconds)
-		this.enemyAct = Enemy.prototype.normal.call(this);
-		// this.edible = true (in case we add enemies like Gordo)
+		this.baseSpeed = 48;
+		this.actDelay = 2000;
 	}
 	else if (ability === 'thunder') { // eye thing
 		Character.call(this, game, x, y, 'waddleDoo', true);
@@ -37,10 +40,6 @@ function Enemy (game, x, y, ability, kirby, scene){
 	}
 
 	this.originalScale = this.scale.x;
-
-	this.kirby = kirby; // kirby
-
-	this.currentPowerUp = ability; // the power up kirby will get when an enemy is eaten
 
 	this.actTimer = 0; //
 
@@ -60,11 +59,7 @@ function Enemy (game, x, y, ability, kirby, scene){
 	this.staysIdle = false;
 	this.acts = false;
 	this.attackAnim = false;
-	//this.isHurt = false;
-	this.tag = 'enemy';
 	this.isHurt = false;
-
-	//this.actLoop = this.game.time.events.loop(ACT, function(){this.act();}, this);
 
 	this.setAnimations();
 }
@@ -120,7 +115,7 @@ Enemy.prototype.update = function(){
 			this.animations.play('walk');
 			this.move(this.speed);
 		}
-		if (this.game.time.now > this.actTimer && !this.beingAbsorbed){   // TODO: fix this so it repeats a cycle of acting, staying idle, acting...
+		if (this.game.time.now > this.actTimer && !this.beingAbsorbed){
 			if (!this.acts) {
 				this.staysIdle = false;
 			}
@@ -139,7 +134,6 @@ Enemy.prototype.update = function(){
 			}
 		}
 	// TODO -------------------------- add if enemy collides with walls this.speed = -this.speed
-	
 	this.beingEaten();
 	this.collideWithKirby();
 	}
@@ -172,10 +166,8 @@ Enemy.prototype.die = function(){
 		this.isHurt = true;
 		this.stop();
 		this.game.time.events.add(DEAD_ANIM, function(){this.destroy();}, this);
-		//this.game.time.events.remove(this.actLoop);
 	}
 	else {
-		//this.game.time.events.remove(this.actLoop);
 		this.destroy();
 	}
 }
@@ -194,15 +186,18 @@ Enemy.prototype.act = function(){
 Enemy.prototype.reset = function(){
 	this.x = this.initialX;
 	this.y = this.initialY;
+	
 	if (this.attacks != null){
 		this.attacks.destroy();
 		this.attacks = null;
 	}
+
 	this.isHurt = false;
 	this.beingAbsorbed = false;
 	this.staysIdle = false;
 	this.acts = false;
 	this.attackAnim = false;
+
 	if (this.x > this.kirby.x){
 		this.facingRight = false;
 		this.speed = -this.baseSpeed;

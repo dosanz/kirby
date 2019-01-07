@@ -5,7 +5,7 @@ var MovingObject = require ('./movingObject.js');
 function Attack(game, x, y, spriteName, power, kirby) {
     MovingObject.call(this, game, x, y, spriteName)
 
-    this.kirby = kirby;
+    this.kirbyBool = kirby;
 
     this.game.world.addChild(this);
 
@@ -15,7 +15,7 @@ Attack.prototype = Object.create(MovingObject.prototype);
 Attack.prototype.constructor = Attack;
 
 Attack.prototype.damage = function(){
-    if (this.kirby){
+    if (this.kirbyBool){
         var enemy = null;
         var count = this.game.kirbyIndex + 1;
         while(enemy == null && count < this.game.world.children.length){
@@ -30,7 +30,7 @@ Attack.prototype.damage = function(){
         }
     }
 
-    if (!this.kirby){
+    if (!this.kirbyBool){
         var player = this.game.world.children[this.game.kirbyIndex];
         if(this.game.physics.arcade.collide(this, player) == true){
             this.collideWithKirby(player);

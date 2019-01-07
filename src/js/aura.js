@@ -15,7 +15,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
             x += 16;
         }
         else{
-                x -= 16;
+            x -= 16;
             this.flip = -1;
         }
     }
@@ -47,6 +47,7 @@ function Aura(game, x, y, power, kirbyBool, attacker){
         }
         this.sound = this.game.add.audio('spark');
     }
+    
     this.body.collideWorldBounds = false;
 
     this.scale.x *= this.flip;

@@ -5,7 +5,7 @@ var Bullet = require('./bullet.js');
 var Aura = require('./aura.js');
 var LostPowerUp = require('./lostPowerUp');
 
-const AIR_SPEED = 180;
+const AIR_SPEED = 100;
 const GROUND_SPEED = 120;
 
 const AIR_GRAVITY = 180;
@@ -21,6 +21,7 @@ const FLIP_FACTOR = -1;
 function Kirby (game, x, y, scene) {
 	MovingObject.call(this, game, x, y, 'kirby');
 	this.anchor.setTo(0.5, 1);
+	this.tag = 'kirby';
 
 	this.initialX = x;
 	this.initialY = y;
@@ -32,6 +33,7 @@ function Kirby (game, x, y, scene) {
 	this.attack = null;
 	this.lostPowerUp = null;
 	this.lostPowerUpCount = 0;
+
 	this.movementSpeed = GROUND_SPEED;
 	this.jumpHeight = 125;
 	this.swallowRange = 100;
@@ -42,7 +44,6 @@ function Kirby (game, x, y, scene) {
 
 	this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
-	this.tag = 'kirby';
 	this.health = INITIAL_HEALTH;
 	this.lifes = 3;
 	this.lastHurt = 0;
@@ -106,7 +107,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.lifes);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -351,15 +351,14 @@ Kirby.prototype.swallow = function(){
 
 Kirby.prototype.getHurt = function (damage){
 	if (this.game.time.now > this.lastHurt){
-		this.stop;
 		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
 		this.jump();
 		if (this.facingRight){
-			this.move(-100);
+			this.body.velocity.x = -400;
 		}
 		else{
-			this.move(100);
+			this.body.velocity.x = 400;
 		}
 		this.health -= damage;
 		if (this.health <= 0){
@@ -427,7 +426,7 @@ Kirby.prototype.act = function () {
 		if (this.attack != null){
 			this.attack.destroy(this);
 		}
-		this.attack = new Aura(this.game, this.x, this.y, 5, true, this);
+		this.attack = new Aura(this.game, this.x, this.y, 1, true, this);
 		this.invincible = true;
 		this.canMove = false;
 	}
@@ -436,7 +435,7 @@ Kirby.prototype.act = function () {
 		if (this.attack != null){
 			this.attack.destroy(this);
 		}
-		this.attack = new Bullet(this.game, this.x, this.y, 5, true, this);
+		this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
 	}
 }
 
@@ -464,25 +463,14 @@ Kirby.prototype.heal = function (healthBoost){
 	}
 }
 
+Kirby.prototype.lifeUp = function(){
+	this.lifes++;
+}
+
 Kirby.prototype.levelChange = function(){
 	this.game.camera.unfollow();
 	this.body.velocity.x = -100;
 	this.body.velocity.y = -10;
 }
 
-
 module.exports = Kirby;
-
-// class Kirby extends Character {
-// 	constructor(game, x, y) {
-// 		super(game, x, y, 'Kirby');
-// 		this.movementSpeed = 8;
-// 		this.empty = true;
-// 		this.currentPowerUp = 0;
-// 		this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
-// 	}
-
-// 	update() {
-
-// 	}
-// }

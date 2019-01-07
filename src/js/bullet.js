@@ -6,6 +6,7 @@ var Attack = require ('./attack.js');
 function Bullet(game, x, y, power, kirbyBool, attacker){
     this.attacker = attacker;
     this.power = power;
+    
     if (this.attacker.currentPowerUp == 'normal'){
         Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
         this.attackSound = this.game.add.audio('star');

@@ -7,16 +7,19 @@ const INITIAL_HEALTH = 20;
 
 function TreeBoss(game, x, y, kirby, scene) {
     GameObject.call(this, game, x, y, 'boss');
+
     this.body.immovable = true;
+    this.body.collideWorldBounds = true;
     this.tag = 'boss';
+
     this.actTimer = 0;
     this.invincibleTime = 0;
     this.health = INITIAL_HEALTH;
     this.kirby = kirby;
     this.scene = scene;
-    this.body.collideWorldBounds = true;
-    this.dead = false;
     this.attacks = new Array(2);
+
+    this.dead = false;
 }
 
 TreeBoss.prototype = Object.create(GameObject.prototype);
@@ -53,8 +56,8 @@ TreeBoss.prototype.hurt = function(damage){
 }
 
 TreeBoss.prototype.act = function(){
-    if (this.game.time.now > this.actTimer){
-        this.actTimer += Math.floor((Math.random() * 14000) + 8000);
+    if (this.game.time.now > this.actTimer && !this.kirby.startedLevel){
+        this.actTimer += Math.floor((Math.random() * 8000) + 6000);
         for (var i = 0; i < this.attacks.length; i++){
             if (this.attacks[i] != null){
                 this.attacks[i].destroy();
