@@ -12,10 +12,11 @@ const FIRST_ENEMY = 2;
 const DEAD_ANIM = 150;
 const ACT = 2000;
 
-function Enemy (game, x, y, ability, kirby){
+function Enemy (game, x, y, ability, kirby, scene){
 
 	this.initialX = x;
 	this.initialY = y;
+	this.scene = scene;
 
 	// set different values depending on the enemy type ----------------
     if (ability === 'normal') { // waddle dee
@@ -97,11 +98,15 @@ Enemy.prototype.setAnimations = function() {
 
 Enemy.prototype.update = function(){
 	if (this.inCamera == true){
+		this.game.physics.arcade.collide(this, this.scene.floor);
+
 		if (this.facingRight){
 			this.scale.x = this.originalScale;
+			this.speed = this.baseSpeed;
 		}
 		else if (!this.facingRight){
 			this.scale.x = -1 * this.originalScale;
+			this.speed = -this.baseSpeed;
 		}
 
 		if (this.isHurt || this.staysIdle){

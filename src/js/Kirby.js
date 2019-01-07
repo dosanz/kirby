@@ -18,12 +18,13 @@ const INITIAL_HEALTH = 5;
 
 const FLIP_FACTOR = -1;
 
-function Kirby (game, x, y) {
+function Kirby (game, x, y, scene) {
 	MovingObject.call(this, game, x, y, 'kirby');
 	this.anchor.setTo(0.5, 1);
 
 	this.initialX = x;
 	this.initialY = y;
+	this.scene = scene;
 
 	this.body.allowGravity = true;
 	this.body.gravity.y = 400;
@@ -39,7 +40,7 @@ function Kirby (game, x, y) {
 	this.flyTimer = 0;
 	this.jumpTimer = 0;
 
-	this.currentPowerUp = 'spark';
+	this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.tag = 'kirby';
 	this.health = INITIAL_HEALTH;
@@ -87,6 +88,7 @@ function Kirby (game, x, y) {
 	this.STjump = this.animations.add('STjump', Phaser.Animation.generateFrameNames('STjump', 1, 4), 5, false);
 	this.STattack = this.animations.add('STattack', Phaser.Animation.generateFrameNames('STattack', 1, 2), 2, false);
 	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
+	// this.SHurt = this.animations.add('SHurt', Phaser.Animation.generateFrameNames('SHurt', 1, 2), 3, true);
 
 	this.hurtSound = this.game.add.audio('hurt');
 	this.jumpSound = this.game.add.audio('jump');
@@ -104,6 +106,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
+	console.log(this.lifes);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -348,16 +351,29 @@ Kirby.prototype.swallow = function(){
 
 Kirby.prototype.getHurt = function (damage){
 	if (this.game.time.now > this.lastHurt){
+		this.stop;
 		this.hurtSound.play();
 		this.lastHurt = this.game.time.now + INVINCIBLE_TIME;
+		this.jump();
+		if (this.facingRight){
+			this.move(-100);
+		}
+		else{
+			this.move(100);
+		}
 		this.health -= damage;
 		if (this.health <= 0){
 			this.lifes--;
-			//if (this.lifes < 0){ GAME OVER state} else{}
-			this.reset();
-			for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
-				if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
-					this.game.world.children[i].reset();
+			if (this.lifes < 0){
+				this.game.lastLevel = this.scene.key;
+				this.game.state.start('gameOver');
+			} 
+			else{
+				this.reset();
+				for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
+					if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
+						this.game.world.children[i].reset();
+					}
 				}
 			}
 		}

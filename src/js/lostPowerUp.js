@@ -37,6 +37,7 @@ LostPowerUp.prototype = Object.create(Character.prototype);
 LostPowerUp.prototype.constructor = LostPowerUp;
 
 LostPowerUp.prototype.update = function(){
+    this.game.physics.arcade.collide(this, this.kirby.scene.floor);
     this.move(this.speed);
 
     if (this.body.onFloor()){

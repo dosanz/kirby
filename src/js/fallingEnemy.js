@@ -4,10 +4,13 @@
 
 var Character = require('./character.js');
 
-function FallingEnemy (game, x, y, spriteName, kirby, edible){
+function FallingEnemy (game, x, y, spriteName, kirby, edible, scene){
     Character.call(this, game, x, y, spriteName);
+    this.tag = 'fallingEnemy';
     this.kirby = kirby;
     this.edible = edible;
+    this.scene = scene;
+    this.currentPowerUp = 'normal'
     this.baseSpeed = 30;
     this.bounceHeight = -200;
     this.speedSet = false;
@@ -18,6 +21,7 @@ FallingEnemy.prototype = Object.create(Character.prototype);
 FallingEnemy.prototype.constructor = FallingEnemy;
 
 FallingEnemy.prototype.update = function(){
+    this.game.physics.arcade.collide(this, this.scene.floor);
     if (this.body.onFloor()) {
         if (this.speedSet == false){
             if (this.x > this.kirby.x){

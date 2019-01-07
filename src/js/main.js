@@ -4,6 +4,7 @@ var PlayScene = require('./play_scene.js');
 var MainMenu = require('./mainMenu.js');
 var Level1 = require('./level1.js');
 var BossLevel = require('./bossLevel.js');
+var GameOver = require('./gameOver.js');
 
 var BootScene = {
   preload: function () {
@@ -93,6 +94,7 @@ window.onload = function () {
   game.state.add('level1', Level1);
   game.state.add('bossLevel', BossLevel);
   game.state.add('mainMenu', MainMenu);
+  game.state.add('gameOver', GameOver);
 
   game.state.start('boot');
 };

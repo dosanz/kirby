@@ -8,6 +8,7 @@ var TreeBoss = require('./treeBoss.js');
 
   var BossLevel = {
   create: function () {
+    console.log(this.game.kirbyPowerUp);
   	// set background and map
     this.game.stage.backgroundColor = 'ffffff';
     this.bg = this.game.add.image(0, 0, 'bossBackground');
@@ -24,11 +25,11 @@ var TreeBoss = require('./treeBoss.js');
     this.bossMusic.play();
 
     // add characters
-    this.player = new Kirby(this.game, 100, 10, 'kirby');
+    this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
-    this.game.kirbyIndex = 1;
+    this.game.kirbyIndex = 2;
 
-    this.boss = new TreeBoss(this.game, 232, 0, this.player);
+    this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
     this.game.world.addChild(this.boss);
 
   }, 

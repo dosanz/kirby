@@ -22,7 +22,7 @@ Attack.prototype.damage = function(){
             
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
-                if (enemy.tag == 'enemy' || enemy.tag == 'boss'){
+                if (enemy.tag == 'enemy' || enemy.tag == 'boss' || enemy.tag == 'fallingEnemy'){
                     this.checkCollisions(enemy, this);
                 }
             }

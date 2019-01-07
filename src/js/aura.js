@@ -73,6 +73,9 @@ Aura.prototype.checkCollisions = function(enemy){
             console.log('oye');
             enemy.hurt(this.power);
         }
+        else if (enemy.tag == 'fallingEnemy'){
+            enemy.destroy();
+        }
     }
 }
 

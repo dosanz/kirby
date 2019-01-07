@@ -34,6 +34,13 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
+    if (this.game.physics.arcade.collide(this, this.attacker.scene.floor)){
+        this.speed = 0;
+        this.dying = true;
+        this.animations.play('crash');
+        this.attackSound.stop();
+        this.crashSound.play();
+    }
     this.move(this.speed);
     if (!this.dying){
         this.damage();
@@ -52,6 +59,10 @@ Bullet.prototype.checkCollisions = function(enemy){
         if(this.checkOverlap(this, enemy)){
             this.collideWithBoss(enemy);
         }
+    }
+
+    else if (enemy.tag == 'fallingEnemy'){
+        enemy.destroy();
     }
 }
 

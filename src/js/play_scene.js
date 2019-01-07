@@ -38,20 +38,21 @@ var Enemy = require('./enemy.js');
     this.floor.resizeWorld();
 
     // meter a kirby en el mundo
-    this.player = new Kirby(this.game, 100, 10, 'kirby');
+    this.game.kirbyPowerUp = 'normal';
+    this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
     this.game.kirbyIndex = 2;
 
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
     this.attack
-    this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, 'enemy');
+    this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee);
-    this.waddleDee1 = new Enemy(this.game, 200, 40, 'normal', this.player, 'enemy');
+    this.waddleDee1 = new Enemy(this.game, 200, 40, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee1);
-    this.waddleDee2 = new Enemy(this.game, 60, 40, 'normal', this.player, 'enemy');
+    this.waddleDee2 = new Enemy(this.game, 60, 40, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, 'enemy');
+    this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, this);
     this.game.world.addChild(this.waddleDee3);
 
     this.endStar = new EndStar(this.game,500, 200, 'starAttack', this.player);
@@ -73,13 +74,13 @@ var Enemy = require('./enemy.js');
 
   update: function(){
     if (!this.player.inCamera) {
+      this.game.kirbyPowerUp = this.player.currentPowerUp;
         this.greenGreensLoop.stop();
         this.game.state.start('bossLevel');
     }
     
 
     this.game.physics.arcade.collide(this.player, this.floor);
-    this.game.physics.arcade.collide(this.waddleDee, this.floor);
     // TODO: do this for the enemy group too
   },
 
