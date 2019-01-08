@@ -9,13 +9,12 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dosanz/kirby.git"
   },
-  "deploy": "gh-pages -d dist",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dosanz/kirby/issues"
