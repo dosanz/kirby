@@ -1,20 +1,24 @@
 {
-  "version": "0.0.0",
-  "name": "awesome-game",
-  "author": "gituser",
-  "license": "CC-BY-NC-SA-4.0",
-  "repository": "gituser/awesome-game",
+  "name": "kirby",
+  "version": "1.0.0",
+  "description": "Dorian Sanz Bruno \r \t \t         &\r \t\t  Belén Solla Sanz",
+  "main": "gulpfile.js",
   "dependencies": {
-    "browser-sync": "*",
-    "browserify": "*",
-    "del": "*",
-    "gulp": "^3.9.1",
-    "gulp-connect": "*",
-    "gulp-gh-pages": "*",
-    "gulp-util": "*",
-    "merge-stream": "*",
-    "phaser": "2.6.0",
-    "vinyl-source-stream": "*",
-    "watchify": "*"
-  }
+    "gh-pages": "^2.0.1",
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dosanz/kirby.git"
+  },
+  "deploy": "gh-pages -d dist",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dosanz/kirby/issues"
+  },
+  "homepage": "https://dosanz.github.io/kirby"
 }
