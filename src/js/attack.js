@@ -19,7 +19,6 @@ Attack.prototype.damage = function(){
         var enemy = null;
         var count = this.game.kirbyIndex + 1;
         while(enemy == null && count < this.game.world.children.length){
-            
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
                 if (enemy.tag == 'enemy' || enemy.tag == 'boss' || enemy.tag == 'fallingEnemy'){

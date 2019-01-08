@@ -60,6 +60,7 @@ function Enemy (game, x, y, ability, kirby, scene){
 	this.acts = false;
 	this.attackAnim = false;
 	this.isHurt = false;
+	this.reseted = false;
 
 	this.setAnimations();
 }
@@ -92,8 +93,10 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
+
+	this.game.physics.arcade.collide(this, this.scene.floor);
+
 	if (this.inCamera == true){
-		this.game.physics.arcade.collide(this, this.scene.floor);
 
 		if (this.facingRight){
 			this.scale.x = this.originalScale;
@@ -138,9 +141,12 @@ Enemy.prototype.update = function(){
 	this.collideWithKirby();
 	}
 
-	else{
+	else if (this.initialX <= this.kirby.x - 160){
 		this.reset();
 	}
+
+	console.log(this.kirby.x - 160);
+	console.log(this.initialX);
 
 }
 

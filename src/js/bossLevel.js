@@ -17,7 +17,7 @@ var TreeBoss = require('./treeBoss.js');
       }, this);
 
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
-      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
+      function(){if(this.game.paused){this.game.paused = false; this.bossMusic.stop(); this.game.state.start('mainMenu');};}, this);
       
   	// set background and map
     this.game.stage.backgroundColor = 'ffffff';
@@ -39,7 +39,7 @@ var TreeBoss = require('./treeBoss.js');
     this.game.world.addChild(this.player);
     this.player.loadHealth();
     this.player.loadLives();
-    this.game.kirbyIndex = 2;
+    this.game.kirbyIndex = 5;
 
     this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
     this.game.world.addChild(this.boss);
@@ -62,7 +62,7 @@ var TreeBoss = require('./treeBoss.js');
     if (this.player.endedLevel && this.player.x < 40) {
       this.game.kirbyPowerUp = this.player.currentPowerUp;
         this.bossMusic.stop();
-        this.game.state.start('endScene');
+        this.game.state.start('ending');
     }
   }
 };

@@ -114,5 +114,5 @@ window.onload = function () {
   game.state.add('instructionsScreen', InstructionsScreen);
   game.state.add('ending', EndScene);
 
-  game.state.start('ending');
+  game.state.start('boot');
 };

@@ -44,7 +44,8 @@ function Kirby (game, x, y, scene) {
 	this.flyTimer = 0;
 	this.jumpTimer = 0;
 
-	this.currentPowerUp = this.game.kirbyPowerUp;
+	this.currentPowerUp = 'spark';
+	//this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.health = INITIAL_HEALTH;
 	this.lives = 3;
@@ -121,7 +122,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.game.world.children);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -420,10 +420,10 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'spark' || this.currentPowerUp == 'thunder' || this.currentPowerUp == 'fire') {
-		if (this.attack != null){
-			this.attack.destroy(this);
-		}
-		this.attack = new Aura(this.game, this.x, this.y, 1, true, this);
+		//if (this.attack != null){
+		//	this.attack.destroy(this);
+		//}
+		var aura = new Aura(this.game, this.x, this.y, 1, true, this);
 		this.invincible = true;
 		this.canMove = false;
 	}

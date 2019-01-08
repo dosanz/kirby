@@ -17,7 +17,7 @@ var Enemy = require('./enemy.js');
       }, this);
 
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
-      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
+      function(){if(this.game.paused){this.game.paused = false; this.greenGreensLoop.stop(); this.game.state.start('mainMenu');};}, this);
 
 
     // level change test
@@ -42,21 +42,21 @@ var Enemy = require('./enemy.js');
     this.game.kirbyPowerUp = 'normal';
     this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
-    this.game.kirbyIndex = 2;
+    this.game.kirbyIndex = 5;
 
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
     this.attack
-    this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, this);
+    this.waddleDee = new Enemy(this.game, 40, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee);
-    this.waddleDee1 = new Enemy(this.game, 200, 40, 'normal', this.player, this);
+    this.waddleDee1 = new Enemy(this.game, 200, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee1);
-    this.waddleDee2 = new Enemy(this.game, 60, 40, 'normal', this.player, this);
+    this.waddleDee2 = new Enemy(this.game, 60, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, this);
+    this.waddleDee3 = new Enemy(this.game, 80, 182, 'thunder', this.player, this);
     this.game.world.addChild(this.waddleDee3);
 
-    this.endStar = new EndStar(this.game,700, 112, 'starAttack', this.player);
+    this.endStar = new EndStar(this.game,1544, 136, 'starAttack', this.player);
 
     this.pauseText = this.game.add.bitmapText(128, 112, 'pixelFont', 'pause', 16);
     this.pauseText.anchor.setTo(0.5, 0.5);
@@ -87,7 +87,6 @@ var Enemy = require('./enemy.js');
         this.greenGreensLoop.stop();
         this.game.state.start('bossLevel');
     }
-    
 
     this.game.physics.arcade.collide(this.player, this.floor);
     // TODO: do this for the enemy group too

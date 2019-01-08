@@ -45,7 +45,8 @@ function Kirby (game, x, y, scene) {
 	this.flyTimer = 0;
 	this.jumpTimer = 0;
 
-	this.currentPowerUp = this.game.kirbyPowerUp;
+	this.currentPowerUp = 'spark';
+	//this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.health = INITIAL_HEALTH;
 	this.lives = 3;
@@ -122,7 +123,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.game.world.children);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -421,10 +421,10 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'spark' || this.currentPowerUp == 'thunder' || this.currentPowerUp == 'fire') {
-		if (this.attack != null){
-			this.attack.destroy(this);
-		}
-		this.attack = new Aura(this.game, this.x, this.y, 1, true, this);
+		//if (this.attack != null){
+		//	this.attack.destroy(this);
+		//}
+		var aura = new Aura(this.game, this.x, this.y, 1, true, this);
 		this.invincible = true;
 		this.canMove = false;
 	}
@@ -540,7 +540,6 @@ Attack.prototype.damage = function(){
         var enemy = null;
         var count = this.game.kirbyIndex + 1;
         while(enemy == null && count < this.game.world.children.length){
-            
             if(this.game.physics.arcade.collide(this, this.game.world.children[count])){
                 enemy = this.game.world.children[count];
                 if (enemy.tag == 'enemy' || enemy.tag == 'boss' || enemy.tag == 'fallingEnemy'){
@@ -690,7 +689,7 @@ var TreeBoss = require('./treeBoss.js');
       }, this);
 
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
-      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
+      function(){if(this.game.paused){this.game.paused = false; this.bossMusic.stop(); this.game.state.start('mainMenu');};}, this);
       
   	// set background and map
     this.game.stage.backgroundColor = 'ffffff';
@@ -712,7 +711,7 @@ var TreeBoss = require('./treeBoss.js');
     this.game.world.addChild(this.player);
     this.player.loadHealth();
     this.player.loadLives();
-    this.game.kirbyIndex = 2;
+    this.game.kirbyIndex = 5;
 
     this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
     this.game.world.addChild(this.boss);
@@ -735,7 +734,7 @@ var TreeBoss = require('./treeBoss.js');
     if (this.player.endedLevel && this.player.x < 40) {
       this.game.kirbyPowerUp = this.player.currentPowerUp;
         this.bossMusic.stop();
-        this.game.state.start('endScene');
+        this.game.state.start('ending');
     }
   }
 };
@@ -768,6 +767,8 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
 
     this.dying = false;
 
+    this.lifeStart = this.game.time.now;
+    this.lifeTime = 3000;
     this.moving = this.animations.add('moving', [0,1,2], 20, true);
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.destroy();}, this)
@@ -779,6 +780,11 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
+    if (this.game.time.now >= this.lifeStart + this.lifeTime && !this.dying){
+        this.dying = true;
+        this.crashSound.play();
+        this.animations.play('crash');
+    }
     if (this.game.physics.arcade.collide(this, this.attacker.scene.floor)){
         this.speed = 0;
         this.dying = true;
@@ -1026,6 +1032,7 @@ function Enemy (game, x, y, ability, kirby, scene){
 	this.acts = false;
 	this.attackAnim = false;
 	this.isHurt = false;
+	this.reseted = false;
 
 	this.setAnimations();
 }
@@ -1058,8 +1065,10 @@ Enemy.prototype.setAnimations = function() {
 
 
 Enemy.prototype.update = function(){
+
+	this.game.physics.arcade.collide(this, this.scene.floor);
+
 	if (this.inCamera == true){
-		this.game.physics.arcade.collide(this, this.scene.floor);
 
 		if (this.facingRight){
 			this.scale.x = this.originalScale;
@@ -1104,9 +1113,12 @@ Enemy.prototype.update = function(){
 	this.collideWithKirby();
 	}
 
-	else{
+	else if (this.initialX <= this.kirby.x - 160){
 		this.reset();
 	}
+
+	console.log(this.kirby.x - 160);
+	console.log(this.initialX);
 
 }
 
@@ -1509,7 +1521,7 @@ window.onload = function () {
   game.state.add('instructionsScreen', InstructionsScreen);
   game.state.add('ending', EndScene);
 
-  game.state.start('ending');
+  game.state.start('boot');
 };
 
 },{"./bossLevel.js":4,"./endScene.js":7,"./gameOver.js":12,"./instructionsScreen.js":13,"./level1.js":14,"./mainMenu.js":17,"./play_scene.js":19}],17:[function(require,module,exports){
@@ -1576,7 +1588,7 @@ var Enemy = require('./enemy.js');
       }, this);
 
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
-      function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
+      function(){if(this.game.paused){this.game.paused = false; this.greenGreensLoop.stop(); this.game.state.start('mainMenu');};}, this);
 
 
     // level change test
@@ -1601,21 +1613,21 @@ var Enemy = require('./enemy.js');
     this.game.kirbyPowerUp = 'normal';
     this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
-    this.game.kirbyIndex = 2;
+    this.game.kirbyIndex = 5;
 
     this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
     
     this.attack
-    this.waddleDee = new Enemy(this.game, 40, 40, 'normal', this.player, this);
+    this.waddleDee = new Enemy(this.game, 40, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee);
-    this.waddleDee1 = new Enemy(this.game, 200, 40, 'normal', this.player, this);
+    this.waddleDee1 = new Enemy(this.game, 200, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee1);
-    this.waddleDee2 = new Enemy(this.game, 60, 40, 'normal', this.player, this);
+    this.waddleDee2 = new Enemy(this.game, 60, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, this);
+    this.waddleDee3 = new Enemy(this.game, 80, 182, 'thunder', this.player, this);
     this.game.world.addChild(this.waddleDee3);
 
-    this.endStar = new EndStar(this.game,700, 112, 'starAttack', this.player);
+    this.endStar = new EndStar(this.game,1544, 136, 'starAttack', this.player);
 
     this.pauseText = this.game.add.bitmapText(128, 112, 'pixelFont', 'pause', 16);
     this.pauseText.anchor.setTo(0.5, 0.5);
@@ -1646,7 +1658,6 @@ var Enemy = require('./enemy.js');
         this.greenGreensLoop.stop();
         this.game.state.start('bossLevel');
     }
-    
 
     this.game.physics.arcade.collide(this.player, this.floor);
     // TODO: do this for the enemy group too

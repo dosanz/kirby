@@ -24,6 +24,8 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
 
     this.dying = false;
 
+    this.lifeStart = this.game.time.now;
+    this.lifeTime = 3000;
     this.moving = this.animations.add('moving', [0,1,2], 20, true);
     this.crash = this.animations.add('crash', [3,4,5], 5, false);
     this.crash.onComplete.add(function(){this.destroy();}, this)
@@ -35,6 +37,11 @@ Bullet.prototype = Object.create(Attack.prototype);
 Bullet.prototype.constructor = Bullet;
 
 Bullet.prototype.update = function(){
+    if (this.game.time.now >= this.lifeStart + this.lifeTime && !this.dying){
+        this.dying = true;
+        this.crashSound.play();
+        this.animations.play('crash');
+    }
     if (this.game.physics.arcade.collide(this, this.attacker.scene.floor)){
         this.speed = 0;
         this.dying = true;
