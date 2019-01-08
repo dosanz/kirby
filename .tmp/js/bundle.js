@@ -1116,10 +1116,6 @@ Enemy.prototype.update = function(){
 	else if (this.initialX <= this.kirby.x - 160){
 		this.reset();
 	}
-
-	console.log(this.kirby.x - 160);
-	console.log(this.initialX);
-
 }
 
 Enemy.prototype.collideWithKirby = function(){
@@ -1624,8 +1620,37 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee1);
     this.waddleDee2 = new Enemy(this.game, 60, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee2);
-    this.waddleDee3 = new Enemy(this.game, 80, 182, 'thunder', this.player, this);
+    this.waddleDoo = new Enemy(this.game, 80, 182, 'thunder', this.player, this);
+    this.game.world.addChild(this.waddleDoo);
+    this.waddleDoo1 = new Enemy(this.game, 833, 120, 'thunder', this.player, this);
+    this.game.world.addChild(this.waddleDoo1);
+    this.waddleDoo2 = new Enemy(this.game, 1310, 152, 'thunder', this.player, this);
+    this.game.world.addChild(this.waddleDoo2);
+    this.waddleDee3 = new Enemy(this.game, 650, 182, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee3);
+    this.waddleDee4 = new Enemy(this.game, 700, 182, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee4);
+    this.waddleDee5 = new Enemy(this.game, 860, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee5);
+    this.waddleDee6 = new Enemy(this.game, 940, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee6);
+    this.waddleDee7 = new Enemy(this.game, 1000, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee7);
+    this.waddleDee8 = new Enemy(this.game, 940, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee8);
+    this.waddleDee9 = new Enemy(this.game, 1060, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee9);
+    this.waddleDee10 = new Enemy(this.game, 1140, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee10);
+    this.waddleDee11 = new Enemy(this.game, 1180, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee11);
+    this.waddleDee12 = new Enemy(this.game, 510, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee12);
+    this.waddleDee13 = new Enemy(this.game, 1200, 168, 'normal', this.player, this);
+    this.game.world.addChild(this.waddleDee13);
+    this.waddleDoo13 = new Enemy(this.game, 400, 144, 'thunder', this.player, this);
+    this.game.world.addChild(this.waddleDoo13);
+
 
     this.endStar = new EndStar(this.game,1544, 136, 'starAttack', this.player);
 

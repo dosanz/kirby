@@ -144,10 +144,6 @@ Enemy.prototype.update = function(){
 	else if (this.initialX <= this.kirby.x - 160){
 		this.reset();
 	}
-
-	console.log(this.kirby.x - 160);
-	console.log(this.initialX);
-
 }
 
 Enemy.prototype.collideWithKirby = function(){
