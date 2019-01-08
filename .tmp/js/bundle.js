@@ -17,6 +17,8 @@ const FLY_TIMER = 500;
 const JUMP_TIMER = 250;
 const INITIAL_HEALTH = 5;
 
+const INFOBAR_Y = 224;
+
 const FLIP_FACTOR = -1;
 
 function Kirby (game, x, y, scene) {
@@ -46,7 +48,7 @@ function Kirby (game, x, y, scene) {
 	this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.health = INITIAL_HEALTH;
-	this.lifes = 3;
+	this.lives = 3;
 	this.lastHurt = 0;
 
 	// control bools --------------------
@@ -67,11 +69,16 @@ function Kirby (game, x, y, scene) {
 	this.endedLevel = false;
 	this.startedLevel = true;
 
+	// info bar -------- (it only makes sense when kirby is in the scene, so it's on the same module)
 	this.healthBars = this.game.add.group();
 	for (var i = 0; i < INITIAL_HEALTH; i++) {
-        this.healthBars.create(8 * i, 224, 'lifeFull');
+        this.healthBars.create(8 * i, INFOBAR_Y, 'lifeFull');
     }
+    this.livesIcon = this.game.add.image(16*4, INFOBAR_Y, 'livesLeftIcon');
+    this.livesText = this.game.add.bitmapText(16*5, INFOBAR_Y, 'pixelFont', this.lives, 16);
     this.healthBars.fixedToCamera = true;
+    this.livesIcon.fixedToCamera = true;
+    this.livesText.fixedToCamera = true;
 
 	// input keys ------------------------
 	this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -352,12 +359,13 @@ Kirby.prototype.getHurt = function (damage){
 		}
 		this.health -= damage;
 		if (this.health <= 0){
-			this.lifes--;
-			if (this.lifes < 0){
+			this.lives--;
+			if (this.lives < 0){
 				this.game.lastLevel = this.scene.key;
 				this.game.state.start('gameOver');
 			} 
 			else{
+				this.changeLivesText();
 				this.reset();
 				for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
 					if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
@@ -482,11 +490,29 @@ Kirby.prototype.heal = function (healthBoost){
 }
 
 Kirby.prototype.lifeUp = function(){
-	this.lifes++;
+	this.lives++;
 }
+
+
+Kirby.prototype.saveLives = function() {
+	this.game.kirbyLives = this.lives;
+}
+
+
+Kirby.prototype.loadLives = function() {
+	this.lives = this.game.kirbyLives;
+	Kirby.prototype.changeLivesText.call(this);
+}
+
+
+Kirby.prototype.changeLivesText = function() {
+	this.livesText.text = this.lives;
+}
+
 
 Kirby.prototype.levelChange = function(){
 	Kirby.prototype.saveHealth.call(this, 4);
+	Kirby.prototype.saveLives.call(this);
 	this.game.camera.unfollow();
 	this.body.velocity.x = -100;
 	this.body.velocity.y = -10;
@@ -676,6 +702,7 @@ var TreeBoss = require('./treeBoss.js');
     this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
     this.player.loadHealth();
+    this.player.loadLives();
     this.game.kirbyIndex = 2;
 
     this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
@@ -1299,6 +1326,7 @@ var PreloaderScene = {
     this.game.load.image('apple', 'images/apple.png');
     this.game.load.image('lifeFull', 'images/life-full.png');
     this.game.load.image('lifeEmpty', 'images/life-empty.png');
+    this.game.load.image('livesLeftIcon', 'images/livesLeftIcon.png');
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
@@ -1340,11 +1368,13 @@ var PreloaderScene = {
     this.game.load.audio('victoryDance', ['music/victory.mp3', 'music/victory.ogg']);
     this.game.load.audio('defeatMusic', ['music/dead.mp3', 'music/dead.ogg']);
 
+    this.game.load.bitmapFont('pixelFont', 'fonts/nokia16black.png', 'fonts/nokia16black.xml');
   },
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.kirbyHealth; // to save Kirby's health when we change scenes
+    this.game.kirbyLives;
 
     this.game.state.start('mainMenu');
   }
@@ -1470,7 +1500,7 @@ var Enemy = require('./enemy.js');
     this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, this);
     this.game.world.addChild(this.waddleDee3);
 
-    this.endStar = new EndStar(this.game,500, 200, 'starAttack', this.player);
+    this.endStar = new EndStar(this.game,700, 112, 'starAttack', this.player);
     this.game.world.addChild(this.endStar);
 
     // set music

@@ -33,6 +33,7 @@ var PreloaderScene = {
     this.game.load.image('apple', 'images/apple.png');
     this.game.load.image('lifeFull', 'images/life-full.png');
     this.game.load.image('lifeEmpty', 'images/life-empty.png');
+    this.game.load.image('livesLeftIcon', 'images/livesLeftIcon.png');
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
@@ -74,11 +75,13 @@ var PreloaderScene = {
     this.game.load.audio('victoryDance', ['music/victory.mp3', 'music/victory.ogg']);
     this.game.load.audio('defeatMusic', ['music/dead.mp3', 'music/dead.ogg']);
 
+    this.game.load.bitmapFont('pixelFont', 'fonts/nokia16black.png', 'fonts/nokia16black.xml');
   },
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.kirbyHealth; // to save Kirby's health when we change scenes
+    this.game.kirbyLives;
 
     this.game.state.start('mainMenu');
   }

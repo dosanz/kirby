@@ -55,7 +55,7 @@ var Enemy = require('./enemy.js');
     this.waddleDee3 = new Enemy(this.game, 80, 40, 'thunder', this.player, this);
     this.game.world.addChild(this.waddleDee3);
 
-    this.endStar = new EndStar(this.game,500, 200, 'starAttack', this.player);
+    this.endStar = new EndStar(this.game,700, 112, 'starAttack', this.player);
     this.game.world.addChild(this.endStar);
 
     // set music

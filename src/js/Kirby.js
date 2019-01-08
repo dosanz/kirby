@@ -16,6 +16,8 @@ const FLY_TIMER = 500;
 const JUMP_TIMER = 250;
 const INITIAL_HEALTH = 5;
 
+const INFOBAR_Y = 224;
+
 const FLIP_FACTOR = -1;
 
 function Kirby (game, x, y, scene) {
@@ -45,7 +47,7 @@ function Kirby (game, x, y, scene) {
 	this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.health = INITIAL_HEALTH;
-	this.lifes = 3;
+	this.lives = 3;
 	this.lastHurt = 0;
 
 	// control bools --------------------
@@ -66,11 +68,16 @@ function Kirby (game, x, y, scene) {
 	this.endedLevel = false;
 	this.startedLevel = true;
 
+	// info bar -------- (it only makes sense when kirby is in the scene, so it's on the same module)
 	this.healthBars = this.game.add.group();
 	for (var i = 0; i < INITIAL_HEALTH; i++) {
-        this.healthBars.create(8 * i, 224, 'lifeFull');
+        this.healthBars.create(8 * i, INFOBAR_Y, 'lifeFull');
     }
+    this.livesIcon = this.game.add.image(16*4, INFOBAR_Y, 'livesLeftIcon');
+    this.livesText = this.game.add.bitmapText(16*5, INFOBAR_Y, 'pixelFont', this.lives, 16);
     this.healthBars.fixedToCamera = true;
+    this.livesIcon.fixedToCamera = true;
+    this.livesText.fixedToCamera = true;
 
 	// input keys ------------------------
 	this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -351,12 +358,13 @@ Kirby.prototype.getHurt = function (damage){
 		}
 		this.health -= damage;
 		if (this.health <= 0){
-			this.lifes--;
-			if (this.lifes < 0){
+			this.lives--;
+			if (this.lives < 0){
 				this.game.lastLevel = this.scene.key;
 				this.game.state.start('gameOver');
 			} 
 			else{
+				this.changeLivesText();
 				this.reset();
 				for (var i = this.game.kirbyIndex + 1; i < this.game.world.children.length; i++){
 					if (this.game.world.children[i].tag == 'enemy' || this.game.world.children[i].tag == 'boss'){
@@ -481,11 +489,29 @@ Kirby.prototype.heal = function (healthBoost){
 }
 
 Kirby.prototype.lifeUp = function(){
-	this.lifes++;
+	this.lives++;
 }
+
+
+Kirby.prototype.saveLives = function() {
+	this.game.kirbyLives = this.lives;
+}
+
+
+Kirby.prototype.loadLives = function() {
+	this.lives = this.game.kirbyLives;
+	Kirby.prototype.changeLivesText.call(this);
+}
+
+
+Kirby.prototype.changeLivesText = function() {
+	this.livesText.text = this.lives;
+}
+
 
 Kirby.prototype.levelChange = function(){
 	Kirby.prototype.saveHealth.call(this, 4);
+	Kirby.prototype.saveLives.call(this);
 	this.game.camera.unfollow();
 	this.body.velocity.x = -100;
 	this.body.velocity.y = -10;
