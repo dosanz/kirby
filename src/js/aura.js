@@ -71,7 +71,6 @@ Aura.prototype.checkCollisions = function(enemy){
             enemy.die();
         }
         else if (enemy.tag == 'boss'){
-            console.log('oye');
             enemy.hurt(this.power);
         }
         else if (enemy.tag == 'fallingEnemy'){

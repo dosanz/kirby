@@ -19,16 +19,6 @@ var Enemy = require('./enemy.js');
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
       function(){if(this.game.paused){this.game.paused = false; this.greenGreensLoop.stop(); this.game.state.start('mainMenu');};}, this);
 
-
-    // level change test
-    // this.input.keyboard.addKey (Phaser.Keyboard.P).onDown.add(function(){this.game.state.start('level1');}, this);
-    
-    //this.input.keyboard.addKey (Phaser.Keyboard.R).onDown.add(this.restart(), this);
-    // var logo = this.game.add.sprite(
-    //   this.game.world.centerX, this.game.world.centerY, 'logo');
-    // logo.anchor.setTo(0.5, 0.5);
-
-    // Map test -- TODO: maybe migrate to a specific class? like level1 or grassLevel
     this.game.stage.backgroundColor = 'ffffff';
     this.bg = this.game.add.image(0, 0, 'grassBackground');
     this.bg.fixedToCamera = true;

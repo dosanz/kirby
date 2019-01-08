@@ -18,8 +18,6 @@ const INITIAL_HEALTH = 5;
 
 const INFOBAR_Y = 224;
 
-const FLIP_FACTOR = -1;
-
 function Kirby (game, x, y, scene) {
 	MovingObject.call(this, game, x, y, 'kirby');
 	this.anchor.setTo(0.5, 1);
@@ -102,7 +100,6 @@ function Kirby (game, x, y, scene) {
 	this.STjump = this.animations.add('STjump', Phaser.Animation.generateFrameNames('STjump', 1, 4), 5, false);
 	this.STattack = this.animations.add('STattack', Phaser.Animation.generateFrameNames('STattack', 1, 2), 2, false);
 	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
-	// this.SHurt = this.animations.add('SHurt', Phaser.Animation.generateFrameNames('SHurt', 1, 2), 3, true);
 
 	// sound set up -----------------
 	this.hurtSound = this.game.add.audio('hurt');
@@ -121,7 +118,6 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
-	console.log(this.currentPowerUp);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -208,7 +204,6 @@ Kirby.prototype.manageInput = function () {
 		if (this.keySpace.isDown && this.lostPowerUpCount == 0){
 			this.releasePowerUp();
 		}
-		// add else if grounded: smooshed down sprite
 	}
 	if (this.keySpace.isDown && this.keySpace.enable == true) {
 		if (this.currentPowerUp == 'normal')
@@ -276,47 +271,47 @@ Kirby.prototype.manageAnimations = function() {
 
 
 Kirby.prototype.animateSmallIdle = function(powerUp) {
-	if (powerUp == 'thunder') {
+	if (powerUp != 'normal') {
 		this.animations.play('STidle');
-	} // TODO: add else-if's before the final else for the rest of power ups
-	else { // animates 'normal' and anything we still dont have 
+	} 
+	else { 
 		this.animations.play('SNidle');
 	}
 }
 
 
 Kirby.prototype.animateSmallWalk = function(powerUp) {
-	if (powerUp == 'thunder') {
+	if (powerUp != 'normal') {
 		this.animations.play('STwalk');
 	} 
-	else { // animates 'normal' and anything we still dont have 
+	else {
 		this.animations.play('SNwalk');
 	}
 }
 
 
 Kirby.prototype.animateSmallJump = function(powerUp) {
-	if (powerUp == 'thunder') {
+	if (powerUp != 'normal') {
 		this.animations.play('STjump');
 	} 
-	else { // animates 'normal' and anything we still dont have 
+	else {
 		this.animations.play('SNjump');
 	}
 }
 
 
 Kirby.prototype.animateSmallAttack = function(powerUp) {
-	if (powerUp == 'thunder') {
+	if (powerUp != 'normal') {
 		this.animations.play('STattack');
 	}
 }
 
 
 Kirby.prototype.animateFly = function(powerUp) {
-	if (powerUp == 'thunder') {
+	if (powerUp != 'normal') {
 		this.animations.play('BTfly');
 	} 
-	else { // animates 'normal' and anything we still dont have 
+	else {
 		this.animations.play('BNfly');
 	}
 }
@@ -391,15 +386,12 @@ Kirby.prototype.releasePowerUp = function(){
 	}
 }
 
-// TODO: fill
 Kirby.prototype.act = function () {
 	if (this.currentPowerUp == 'normal'){
 		if (!this.empty && this.keySpace.enable){
 			this.empty = true;
 			this.storedPowerUp = 'normal';
-			//if (this.attack != null){
-			//	this.attack.destroy(this);
-			//}
+
 			this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
 			this.keySpace.enable = false;
 		}
@@ -422,18 +414,12 @@ Kirby.prototype.act = function () {
 	}
 
 	else if (this.currentPowerUp == 'spark' || this.currentPowerUp == 'thunder' || this.currentPowerUp == 'fire') {
-		//if (this.attack != null){
-		//	this.attack.destroy(this);
-		//}
 		this.attack = new Aura(this.game, this.x, this.y, 1, true, this);
 		this.invincible = true;
 		this.canMove = false;
 	}
 
 	else if (this.currentPowerUp == 'knife'){
-		//if (this.attack != null){
-		//	this.attack.destroy(this);
-		//}
 		this.attack.push(new Bullet(this.game, this.x, this.y, 3, true, this));
 	}
 }

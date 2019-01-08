@@ -1,16 +1,9 @@
 'use strict';
 
-var GameObject = require('./gameObject.js');
-var MovingObject = require('./movingObject.js');
 var Character = require('./character.js');
-var Kirby = require('./Kirby.js');
 var Aura = require('./aura.js');
-var Bullet = require('./bullet.js');
 
-
-const FIRST_ENEMY = 2;
 const DEAD_ANIM = 150;
-const ACT = 2000;
 
 function Enemy (game, x, y, ability, kirby, scene){
 
@@ -51,7 +44,7 @@ function Enemy (game, x, y, ability, kirby, scene){
 
 	this.originalScale = this.scale.x;
 
-	this.actTimer = 0; //
+	this.actTimer = 0;
 
 	this.attacks = null;
 
@@ -148,7 +141,6 @@ Enemy.prototype.update = function(){
 				this.acts = false;
 			}
 		}
-	// TODO -------------------------- add if enemy collides with walls this.speed = -this.speed
 	this.beingEaten();
 	this.collideWithKirby();
 	}

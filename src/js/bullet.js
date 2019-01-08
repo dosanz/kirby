@@ -12,9 +12,6 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
         this.attackSound = this.game.add.audio('star');
         this.crashSound = this.game.add.audio('starCrash');
     }
-    else if (this.attacker.currentPowerUp == 'knife'){
-        Attack.call(this, game, x, y, 'knifeAttack', power, kirbyBool);
-    }
     if (this.attacker.facingRight){
         this.speed = 100;
     }

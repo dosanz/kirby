@@ -3,10 +3,8 @@
 var PlayScene = require('./play_scene.js');
 var MainMenu = require('./mainMenu.js');
 var InstructionsScreen = require('./instructionsScreen.js');
-var Level1 = require('./level1.js');
 var BossLevel = require('./bossLevel.js');
 var GameOver = require('./gameOver.js');
-var EndScene = require('./endScene.js');
 var Win = require('./winMenu.js');
 
 var BootScene = {
@@ -52,7 +50,6 @@ var PreloaderScene = {
     this.game.load.image('bossBackground', 'images/bg-boss.png');
     this.game.load.image('grassTilesPhaser', 'tiled/tile-grass.png');
     this.game.load.image('cloudTile', 'images/basicHubTile.png');
-    this.game.load.tilemap('endScene', 'tiled/end.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('grassLevel', 'tiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('bossTilemap', 'tiled/boss.json', null, Phaser.Tilemap.TILED_JSON);
 
@@ -95,7 +92,6 @@ var PreloaderScene = {
   },
 
   create: function () {
-    //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     this.game.kirbyHealth; // to save Kirby's health when we change scenes
     this.game.kirbyLives;
 
@@ -113,7 +109,6 @@ window.onload = function () {
   game.state.add('boot', BootScene);
   game.state.add('preloader', PreloaderScene);
   game.state.add('play', PlayScene);
-  game.state.add('level1', Level1);
   game.state.add('bossLevel', BossLevel);
   game.state.add('mainMenu', MainMenu);
   game.state.add('gameOver', GameOver);

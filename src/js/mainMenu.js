@@ -1,10 +1,5 @@
 'use strict';
 
-var GameObject = require('./gameObject.js');
-var Character = require('./character.js');
-var Kirby = require('./Kirby.js');
-var Enemy = require('./enemy.js');
-
 var MainMenu = {
   create: function () {
     this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');

@@ -1,4 +1,3 @@
-// TODO: make better sprites
 'use strict'
 var MovingObject = require ('./movingObject.js');
 

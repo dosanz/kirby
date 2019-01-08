@@ -6,7 +6,6 @@ function MovingObject(game, x, y, spriteName) {
 	GameObject.call(this, game, x, y, spriteName);
 
 	this.hurtSound = this.game.add.audio('hurt');
-	//this.body.collideWorldBounds = true;
 }
 
 MovingObject.prototype = Object.create(GameObject.prototype);

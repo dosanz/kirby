@@ -1,9 +1,6 @@
 'use strict';
 
-var GameObject = require('./gameObject.js');
-var Character = require('./character.js');
 var Kirby = require('./Kirby.js');
-var Enemy = require('./enemy.js');
 var TreeBoss = require('./treeBoss.js');
 
   var BossLevel = {

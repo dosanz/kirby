@@ -4,7 +4,7 @@
 var InstructionsScreen = {
   create: function () {
     this.bg = this.game.add.sprite(0, 0, 'cloudyBackground');
-    // change this so it goes back
+    
     this.button1 = this.game.add.button(128, 180, 'playButton', function(){this.game.state.start('play');}, this, 2, 1, 0);
     this.button1.anchor.setTo(0.5, 0);
 

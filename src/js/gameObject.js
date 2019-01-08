@@ -6,10 +6,6 @@ function GameObject(game, x, y, spriteName) {
 	this.game.physics.enable(this, Phaser.Physics.ARCADE);
 	this.body.collideWorldBounds = true;
 	this.body.allowGravity = false;
-	// this.x = x;
-	// this.y = y;
-
-	//this.game.physics.enable(this, Phaser.Physics.ARCADE);
 }
 
 GameObject.prototype = Object.create(Phaser.Sprite.prototype);

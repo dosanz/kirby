@@ -28,7 +28,6 @@ TreeBoss.prototype = Object.create(GameObject.prototype);
 TreeBoss.prototype.constructor = TreeBoss;
 
 TreeBoss.prototype.update = function(){
-    console.log(this.health);
     if(!this.dead){
         this.collideWithKirby();
         this.act();

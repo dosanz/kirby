@@ -13,7 +13,6 @@ function Character(game, x, y, spriteName, edible) {
 	this.edible = edible;
 
 	this.hurtSound = this.game.add.audio('hurt');
-	//this.body.collideWorldBounds = true;
 }
 
 Character.prototype = Object.create(MovingObject.prototype);
