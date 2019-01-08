@@ -19,5 +19,7 @@
   "bugs": {
     "url": "https://github.com/dosanz/kirby/issues"
   },
-  "homepage": "https://dosanz.github.io/kirby"
+  "homepage": "https://dosanz.github.io/kirby",
+  "keywords": [],
+  "author": ""
 }
