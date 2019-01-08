@@ -6,6 +6,7 @@ var InstructionsScreen = require('./instructionsScreen.js');
 var Level1 = require('./level1.js');
 var BossLevel = require('./bossLevel.js');
 var GameOver = require('./gameOver.js');
+var EndScene = require('./endScene.js');
 
 var BootScene = {
   preload: function () {
@@ -27,8 +28,8 @@ var PreloaderScene = {
 
     // TODO: load here the assets for the game
     this.game.load.image('logo', 'images/phaser.png');
-    this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('playButton', 'images/playButton.png');
+    this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
@@ -46,6 +47,8 @@ var PreloaderScene = {
     this.game.load.image('grassBackground', 'images/bg-grass.png');
     this.game.load.image('bossBackground', 'images/bg-boss.png');
     this.game.load.image('grassTilesPhaser', 'tiled/tile-grass.png');
+    this.game.load.image('cloudTile', 'images/basicHubTile.png');
+    this.game.load.tilemap('endScene', 'tiled/end.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('grassLevel', 'tiled/prueba-grass.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.tilemap('bossTilemap', 'tiled/boss.json', null, Phaser.Tilemap.TILED_JSON);
 
@@ -109,6 +112,7 @@ window.onload = function () {
   game.state.add('mainMenu', MainMenu);
   game.state.add('gameOver', GameOver);
   game.state.add('instructionsScreen', InstructionsScreen);
+  game.state.add('ending', EndScene);
 
-  game.state.start('boot');
+  game.state.start('ending');
 };

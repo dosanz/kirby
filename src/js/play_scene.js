@@ -9,11 +9,12 @@ var Enemy = require('./enemy.js');
   var PlayScene = {
   create: function () {
 
-    // TODO: Add buttons make it beautiful etc
-        // go back to level selection button
-        // quit/back to main menu button
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
-      function(){this.game.paused = !this.game.paused;}, this);
+      function(){
+        this.game.paused = !this.game.paused;
+        this.pauseText.exists = !this.pauseText.exists;
+        this.exitText.exists = !this.exitText.exists;
+      }, this);
 
     this.input.keyboard.addKey (Phaser.Keyboard.Q).onDown.add(
       function(){if(this.game.paused){this.game.paused = false; this.game.state.start('mainMenu');};}, this);
@@ -56,7 +57,15 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee3);
 
     this.endStar = new EndStar(this.game,700, 112, 'starAttack', this.player);
-    this.game.world.addChild(this.endStar);
+
+    this.pauseText = this.game.add.bitmapText(128, 112, 'pixelFont', 'pause', 16);
+    this.pauseText.anchor.setTo(0.5, 0.5);
+    this.exitText = this.game.add.bitmapText(128, 136, 'pixelFont', 'press Q to go back to main menu', 12);
+    this.exitText.anchor.setTo(0.5, 0.5);
+    this.pauseText.fixedToCamera = true;
+    this.exitText.fixedToCamera = true;
+    this.pauseText.exists = false;
+    this.exitText.exists = false;
 
     // set music
     this.greenGreensIntro = this.game.add.audio('greenGreensIntro');

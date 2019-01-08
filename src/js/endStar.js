@@ -7,6 +7,8 @@ function EndStar(game, x, y, spriteName, kirby) {
     this.kirby = kirby;
     this.moving = this.animations.add('moving', [0,1,2], 20, true);
     this.animations.play('moving');
+
+    this.game.world.addChild(this);
 }
 
 EndStar.prototype = Object.create(GameObject.prototype);

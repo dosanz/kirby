@@ -2,6 +2,7 @@
 
 var GameObject = require('./gameObject.js');
 var FallingObject = require('./fallingEnemy.js');
+var EndStar = require('./endStar.js');
 
 const INITIAL_HEALTH = 20;
 
@@ -18,6 +19,7 @@ function TreeBoss(game, x, y, kirby, scene) {
     this.kirby = kirby;
     this.scene = scene;
     this.attacks = new Array(2);
+    this.endStar = null;
 
     this.dead = false;
 }
@@ -31,7 +33,16 @@ TreeBoss.prototype.update = function(){
         this.collideWithKirby();
         this.act();
     }
-    // else if (this.dead) {new endStar -> credits; destroy the enemies}
+    else if (this.dead) {
+        if (this.endStar == null){
+            this.endStar = new EndStar(this.game, 124, 120, 'starAttack', this.kirby);
+        }
+        for (var i = 0; i < this.attacks.length; i++){
+            if (this.attacks[i] != null){
+                this.attacks[i].destroy();
+            }
+        }
+    }
 }
 
 TreeBoss.prototype.collideWithKirby = function(){

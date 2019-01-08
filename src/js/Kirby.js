@@ -121,6 +121,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
+	console.log(this.game.world.children);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();
@@ -396,10 +397,8 @@ Kirby.prototype.act = function () {
 		if (!this.empty && this.keySpace.enable){
 			this.empty = true;
 			this.storedPowerUp = 'normal';
-			if (this.attack != null){
-				this.attack.destroy(this);
-			}
-			this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
+
+			var bullet = new Bullet(this.game, this.x, this.y, 3, true, this);
 			this.keySpace.enable = false;
 		}
 	}
@@ -433,7 +432,7 @@ Kirby.prototype.act = function () {
 		if (this.attack != null){
 			this.attack.destroy(this);
 		}
-		this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
+		var bullet = new Bullet(this.game, this.x, this.y, 3, true, this);
 	}
 }
 
@@ -510,7 +509,7 @@ Kirby.prototype.changeLivesText = function() {
 
 
 Kirby.prototype.levelChange = function(){
-	Kirby.prototype.saveHealth.call(this, 4);
+	Kirby.prototype.saveHealth.call(this, 5);
 	Kirby.prototype.saveLives.call(this);
 	this.game.camera.unfollow();
 	this.body.velocity.x = -100;

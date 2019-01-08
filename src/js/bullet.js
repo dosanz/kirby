@@ -8,7 +8,7 @@ function Bullet(game, x, y, power, kirbyBool, attacker){
     this.power = power;
     
     if (this.attacker.currentPowerUp == 'normal'){
-        Attack.call(this, game, x, y, 'starAttack', power, kirbyBool);
+        Attack.call(this, game, x, y - 8, 'starAttack', power, kirbyBool);
         this.attackSound = this.game.add.audio('star');
         this.crashSound = this.game.add.audio('starCrash');
     }

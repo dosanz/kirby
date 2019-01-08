@@ -6,7 +6,7 @@ var Kirby = require('./Kirby.js');
 var Enemy = require('./enemy.js');
 var TreeBoss = require('./treeBoss.js');
 
-  var BossLevel = {
+  var EndScene = {
   create: function () {
 
     this.input.keyboard.addKey (Phaser.Keyboard.ESC).onDown.add(
@@ -21,18 +21,13 @@ var TreeBoss = require('./treeBoss.js');
       
   	// set background and map
     this.game.stage.backgroundColor = 'ffffff';
-    this.bg = this.game.add.image(0, 0, 'bossBackground');
+    this.bg = this.game.add.image(0, 0, 'cloudyBackground');
     this.bg.fixedToCamera = true;
-    this.map = this.game.add.tilemap('bossTilemap');
-    this.map.addTilesetImage('grass', 'grassTilesPhaser');
+    this.map = this.game.add.tilemap('endScene');
+    this.map.addTilesetImage('clouds', 'cloudTile');
     this.floor = this.map.createLayer('floor');
     this.map.setCollisionBetween(1, 1000, true, 'floor');
     this.floor.resizeWorld();
-
-    // set music
-    this.bossMusic = this.game.add.audio('bossMusic');
-    this.bossMusic.loop = true;
-    this.bossMusic.play();
 
     // add characters
     this.player = new Kirby(this.game, 1, 10, this);
@@ -40,9 +35,6 @@ var TreeBoss = require('./treeBoss.js');
     this.player.loadHealth();
     this.player.loadLives();
     this.game.kirbyIndex = 2;
-
-    this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
-    this.game.world.addChild(this.boss);
 
     this.pauseText = this.game.add.bitmapText(128, 112, 'pixelFont', 'pause', 16);
     this.pauseText.anchor.setTo(0.5, 0.5);
@@ -58,13 +50,7 @@ var TreeBoss = require('./treeBoss.js');
   update: function(){
     this.game.physics.arcade.collide(this.player, this.floor);
     this.game.physics.arcade.collide(this.boss, this.floor);
-
-    if (this.player.endedLevel && this.player.x < 40) {
-      this.game.kirbyPowerUp = this.player.currentPowerUp;
-        this.bossMusic.stop();
-        this.game.state.start('endScene');
-    }
   }
 };
 
-module.exports = BossLevel;
+module.exports = EndScene;
