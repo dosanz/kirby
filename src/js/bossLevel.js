@@ -62,7 +62,7 @@ var TreeBoss = require('./treeBoss.js');
     if (this.player.endedLevel && this.player.x < 40) {
       this.game.kirbyPowerUp = this.player.currentPowerUp;
         this.bossMusic.stop();
-        this.game.state.start('ending');
+        this.game.state.start('win');
     }
   }
 };

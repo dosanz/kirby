@@ -35,6 +35,16 @@ function Enemy (game, x, y, ability, kirby, scene){
 		this.baseSpeed = 16;
 		this.actDelay = 3000;
 	}
+	else if (ability === 'spark') {
+		Character.call(this, game, x, y, 'sparky', true);
+		this.baseSpeed = 16;
+		this.actDelay = 5000;
+	}
+	else if (ability === 'stone') {
+		Character.call(this, game, x, y, 'rocky', true);
+		this.baseSpeed = 8;
+		this.actDelay = 1000;
+	}
 	else {
 		Character.call(this, game, x, y, 'waddleDee', true);
 	}
@@ -81,14 +91,16 @@ Enemy.prototype.setAnimations = function() {
 		this.attack = this.animations.add('attack', [8, 9, 10, 11], 1, false);
 		this.hurt = this.animations.add('hurt', [12, 13, 14, 15], 15, true);
 	}
-	/* TODO: fill when we have their sprite sheets
-	else if (this.powerUp === Character.FIRE) {
-		
+	else if (this.currentPowerUp === 'stone') {
+		this.idle = this.animations.add('idle', [0, 1, 2], 2, true);
+		this.walk = this.animations.add('walk', [0, 1, 1], 5, true);
+		this.hurt = this.animations.add('hurt', [0, 1, 2], 15, true);
 	}
-	else if (this.powerUp === Character.STONE) {
-	
+	else if (this.currentPowerUp === 'spark') {
+		this.idle = this.animations.add('idle', [0, 1], 2, true);
+		this.walk = this.animations.add('walk', [0, 1], 5, true);
+		this.hurt = this.animations.add('hurt', [0, 1], 15, true);
 	}
-	*/
 }
 
 
@@ -182,6 +194,9 @@ Enemy.prototype.act = function(){
 		else if (this.currentPowerUp == 'thunder'){
 			this.thunder();
 		}
+		else if (this.currentPowerUp == 'spark'){
+			this.spark();
+		}
 	}
 }
 
@@ -214,11 +229,16 @@ Enemy.prototype.normal = function() {
 	this.body.velocity.y = -100;
 }
 
-
-Enemy.prototype.fire = function() {
+Enemy.prototype.thunder = function() {
+	if (this.attacks != null){
+		this.attacks.destroy(this);
+	}
+	this.attackAnim = true;
+	this.animations.play('attack');
+	this.attacks = new Aura(this.game, this.x, this.y, 1, false, this);
 }
 
-Enemy.prototype.thunder = function() {
+Enemy.prototype.spark = function(){
 	if (this.attacks != null){
 		this.attacks.destroy(this);
 	}

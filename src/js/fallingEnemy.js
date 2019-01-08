@@ -43,7 +43,7 @@ FallingEnemy.prototype.update = function(){
 FallingEnemy.prototype.collideWithKirby = function(){
 	if (this.game.physics.arcade.collide(this, this.kirby)){
 		if (this.beingAbsorbed == true){
-			this.kirby.eat(this.powerUp, this.kirby);
+			this.kirby.eat(this.currentPowerUp, this.kirby);
 			this.destroy();
 		}
 		else if (this.kirby.invincible == true){

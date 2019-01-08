@@ -44,8 +44,7 @@ function Kirby (game, x, y, scene) {
 	this.flyTimer = 0;
 	this.jumpTimer = 0;
 
-	this.currentPowerUp = 'spark';
-	//this.currentPowerUp = this.game.kirbyPowerUp;
+	this.currentPowerUp = this.game.kirbyPowerUp;
 	this.storedPowerUp = 'normal';
 	this.health = INITIAL_HEALTH;
 	this.lives = 3;
@@ -122,6 +121,7 @@ Kirby.prototype.constructor = Kirby;
 
 
 Kirby.prototype.update = function () {
+	console.log(this.currentPowerUp);
 	if (!this.endedLevel && !this.startedLevel){
 		this.stop();
 		this.manageInput();

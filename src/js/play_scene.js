@@ -79,10 +79,10 @@ var Enemy = require('./enemy.js');
     this.game.world.addChild(this.waddleDee11);
     this.waddleDee12 = new Enemy(this.game, 510, 168, 'normal', this.player, this);
     this.game.world.addChild(this.waddleDee12);
-    this.waddleDee13 = new Enemy(this.game, 1200, 168, 'normal', this.player, this);
-    this.game.world.addChild(this.waddleDee13);
-    this.waddleDoo13 = new Enemy(this.game, 400, 144, 'thunder', this.player, this);
-    this.game.world.addChild(this.waddleDoo13);
+    this.rocky = new Enemy(this.game, 1200, 168, 'stone', this.player, this);
+    this.game.world.addChild(this.rocky);
+    this.sparky = new Enemy(this.game, 400, 144, 'spark', this.player, this);
+    this.game.world.addChild(this.sparky);
 
 
     this.endStar = new EndStar(this.game,1544, 136, 'starAttack', this.player);
@@ -118,7 +118,6 @@ var Enemy = require('./enemy.js');
     }
 
     this.game.physics.arcade.collide(this.player, this.floor);
-    // TODO: do this for the enemy group too
   },
 
   loopMusic: function() {

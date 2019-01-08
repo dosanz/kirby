@@ -7,6 +7,7 @@ var Level1 = require('./level1.js');
 var BossLevel = require('./bossLevel.js');
 var GameOver = require('./gameOver.js');
 var EndScene = require('./endScene.js');
+var Win = require('./winMenu.js');
 
 var BootScene = {
   preload: function () {
@@ -31,8 +32,8 @@ var PreloaderScene = {
     this.game.load.image('playButton', 'images/playButton.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('instrButton', 'images/instructionsButton.png');
-    this.game.load.image('retryButton', 'images/retryButton.png');
     this.game.load.image('quitButton', 'images/quitButton.png');
+    this.game.load.image('retryButton', 'images/retryButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
     this.game.load.image('lifeFull', 'images/life-full.png');
@@ -43,6 +44,7 @@ var PreloaderScene = {
     this.game.load.image('instructionsS', 'images/instructions-S.png');
     this.game.load.image('instructionsW', 'images/instructions-W.png');
     this.game.load.image('instructionsSpace', 'images/instructions-spacebar.png');
+    this.game.load.image('win', 'images/win.png');
 
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
@@ -64,6 +66,8 @@ var PreloaderScene = {
     this.game.load.spritesheet('fireAttack', 'images/fire.png', 24, 24);
     this.game.load.spritesheet('knifeAttack', 'images/knife.png', 24, 24);
     this.game.load.spritesheet('thunderAttack', 'images/thunder.png', 24, 24);
+    this.game.load.spritesheet('sparky', 'images/sparky.png', 16, 16);
+    this.game.load.spritesheet('rocky', 'images/rocky.png', 16, 16);
 
     this.game.load.audio('hurt', 'sounds/hurt.wav');
     this.game.load.audio('fly', 'sounds/fly.wav');
@@ -114,7 +118,7 @@ window.onload = function () {
   game.state.add('mainMenu', MainMenu);
   game.state.add('gameOver', GameOver);
   game.state.add('instructionsScreen', InstructionsScreen);
-  game.state.add('ending', EndScene);
+  game.state.add('win', Win);
 
   game.state.start('boot');
 };
