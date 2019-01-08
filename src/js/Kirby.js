@@ -397,8 +397,10 @@ Kirby.prototype.act = function () {
 		if (!this.empty && this.keySpace.enable){
 			this.empty = true;
 			this.storedPowerUp = 'normal';
-
-			var bullet = new Bullet(this.game, this.x, this.y, 3, true, this);
+			//if (this.attack != null){
+			//	this.attack.destroy(this);
+			//}
+			this.attack = new Bullet(this.game, this.x, this.y, 3, true, this);
 			this.keySpace.enable = false;
 		}
 	}
@@ -423,16 +425,16 @@ Kirby.prototype.act = function () {
 		//if (this.attack != null){
 		//	this.attack.destroy(this);
 		//}
-		var aura = new Aura(this.game, this.x, this.y, 1, true, this);
+		this.attack = new Aura(this.game, this.x, this.y, 1, true, this);
 		this.invincible = true;
 		this.canMove = false;
 	}
 
 	else if (this.currentPowerUp == 'knife'){
-		if (this.attack != null){
-			this.attack.destroy(this);
-		}
-		var bullet = new Bullet(this.game, this.x, this.y, 3, true, this);
+		//if (this.attack != null){
+		//	this.attack.destroy(this);
+		//}
+		this.attack.push(new Bullet(this.game, this.x, this.y, 3, true, this));
 	}
 }
 
