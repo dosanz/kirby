@@ -31,6 +31,8 @@ var PreloaderScene = {
     this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
+    this.game.load.image('lifeFull', 'images/life-full.png');
+    this.game.load.image('lifeEmpty', 'images/life-empty.png');
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
@@ -76,6 +78,7 @@ var PreloaderScene = {
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.kirbyHealth; // to save Kirby's health when we change scenes
 
     this.game.state.start('mainMenu');
   }

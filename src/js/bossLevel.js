@@ -27,6 +27,7 @@ var TreeBoss = require('./treeBoss.js');
     // add characters
     this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
+    this.player.loadHealth();
     this.game.kirbyIndex = 2;
 
     this.boss = new TreeBoss(this.game, 232, 0, this.player, this);

@@ -67,6 +67,12 @@ function Kirby (game, x, y, scene) {
 	this.endedLevel = false;
 	this.startedLevel = true;
 
+	this.healthBars = this.game.add.group();
+	for (var i = 0; i < INITIAL_HEALTH; i++) {
+        this.healthBars.create(8 * i, 224, 'lifeFull');
+    }
+    this.healthBars.fixedToCamera = true;
+
 	// input keys ------------------------
 	this.keyW = game.input.keyboard.addKey(Phaser.Keyboard.W);
 	this.keyA = game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -92,6 +98,7 @@ function Kirby (game, x, y, scene) {
 	this.BTfly = this.animations.add('BTfly', Phaser.Animation.generateFrameNames('BTfly', 1, 2), 3, true);
 	// this.SHurt = this.animations.add('SHurt', Phaser.Animation.generateFrameNames('SHurt', 1, 2), 3, true);
 
+	// sound set up -----------------
 	this.hurtSound = this.game.add.audio('hurt');
 	this.jumpSound = this.game.add.audio('jump');
 	this.flySound = this.game.add.audio('fly');
@@ -225,27 +232,6 @@ Kirby.prototype.manageInput = function () {
 }
 
 
-// Kirby.prototype.getFat = function() {
-// 	this.loadTexture('fatKirby');
-// 	this.fatIdle = this.animations.add('fatIdle', [0, 1, 2, 3], 2, true);
-// 	this.fatWalk = this.animations.add('fatWalk', [4, 5, 6, 7], 5, true);
-// 	this.fly = this.animations.add('fly', [8, 9], 3, true);
-// 	this.body.width = 24;    this.body.height = 24;
-// }
-
-
-// Kirby.prototype.getSmall = function() {
-// 	this.loadTexture('kirby');
-// 	this.idle = this.animations.add('idle', [0, 1, 2, 3], 2, true);
-// 	this.walk = this.animations.add('walk', [4, 5, 6, 7], 5, true);
-// 	this.jumpAnim = this.animations.add('jump', [8, 9, 10, 11], 1, false);
-// 	this.inhaleStart = this.animations.add('inhaleStart', [12, 13], 4, false);
-// 	this.inhale = this.animations.add('inhale', [14, 15], 4, true);
-// 	this.animations.play('idle');
-// 	this.body.width = 16;    this.body.height = 16;	 
-// }
-
-
 Kirby.prototype.manageAnimations = function() {
 	if (!this.empty) {
 		this.body.width = 24;    this.body.height = 24;
@@ -338,9 +324,11 @@ Kirby.prototype.eat = function(powerUp){
 
 }
 
+
 Kirby.prototype.jump = function () {
 	this.body.velocity.y = -this.jumpHeight;
 }
+
 
 Kirby.prototype.swallow = function(){
 	if (this.storedPowerUp != 'normal'){
@@ -349,6 +337,7 @@ Kirby.prototype.swallow = function(){
 	}
 	this.empty = true;
 }
+
 
 Kirby.prototype.getHurt = function (damage){
 	if (this.game.time.now > this.lastHurt){
@@ -377,6 +366,7 @@ Kirby.prototype.getHurt = function (damage){
 				}
 			}
 		}
+		Kirby.prototype.changeHealthSprites.call(this);
 		this.releasePowerUp();
 	}
 }
@@ -457,10 +447,37 @@ Kirby.prototype.reset = function(){
 	this.health = INITIAL_HEALTH;
 }
 
+
+Kirby.prototype.changeHealthSprites = function() {
+	this.healthBars.removeAll(true, true);
+
+	for (var i = 0; i < this.health; i++) {
+        this.healthBars.create(8 * i, 224, 'lifeFull');
+    }
+    for (var j = this.health; j < INITIAL_HEALTH; j++) {
+        this.healthBars.create(8 * j, 224, 'lifeEmpty');
+    }
+}
+
+
+Kirby.prototype.saveHealth = function (savedHealth) {
+	this.game.kirbyHealth = savedHealth;
+}
+
+
+Kirby.prototype.loadHealth = function() {
+	this.health = this.game.kirbyHealth;
+	Kirby.prototype.changeHealthSprites.call(this);
+}
+
+
 Kirby.prototype.heal = function (healthBoost){
 	this.health += healthBoost;
 	if (this.health > INITIAL_HEALTH){
 		this.health = INITIAL_HEALTH;
+	}
+	else {
+		Kirby.prototype.changeHealthSprites.call(this);
 	}
 }
 
@@ -469,6 +486,7 @@ Kirby.prototype.lifeUp = function(){
 }
 
 Kirby.prototype.levelChange = function(){
+	Kirby.prototype.saveHealth.call(this, 4);
 	this.game.camera.unfollow();
 	this.body.velocity.x = -100;
 	this.body.velocity.y = -10;
@@ -657,6 +675,7 @@ var TreeBoss = require('./treeBoss.js');
     // add characters
     this.player = new Kirby(this.game, 100, 10, this);
     this.game.world.addChild(this.player);
+    this.player.loadHealth();
     this.game.kirbyIndex = 2;
 
     this.boss = new TreeBoss(this.game, 232, 0, this.player, this);
@@ -1278,6 +1297,8 @@ var PreloaderScene = {
     this.game.load.image('instrButton', 'images/instructionsButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
+    this.game.load.image('lifeFull', 'images/life-full.png');
+    this.game.load.image('lifeEmpty', 'images/life-empty.png');
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
@@ -1323,6 +1344,7 @@ var PreloaderScene = {
 
   create: function () {
     //this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.kirbyHealth; // to save Kirby's health when we change scenes
 
     this.game.state.start('mainMenu');
   }
