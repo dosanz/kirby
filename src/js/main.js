@@ -31,6 +31,8 @@ var PreloaderScene = {
     this.game.load.image('playButton', 'images/playButton.png');
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('instrButton', 'images/instructionsButton.png');
+    this.game.load.image('retryButton', 'images/retryButton.png');
+    this.game.load.image('quitButton', 'images/quitButton.png');
     this.game.load.image('boss', 'images/boss.png');
     this.game.load.image('apple', 'images/apple.png');
     this.game.load.image('lifeFull', 'images/life-full.png');
