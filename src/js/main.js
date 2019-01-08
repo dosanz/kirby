@@ -2,6 +2,7 @@
 
 var PlayScene = require('./play_scene.js');
 var MainMenu = require('./mainMenu.js');
+var InstructionsScreen = require('./instructionsScreen.js');
 var Level1 = require('./level1.js');
 var BossLevel = require('./bossLevel.js');
 var GameOver = require('./gameOver.js');
@@ -34,6 +35,12 @@ var PreloaderScene = {
     this.game.load.image('lifeFull', 'images/life-full.png');
     this.game.load.image('lifeEmpty', 'images/life-empty.png');
     this.game.load.image('livesLeftIcon', 'images/livesLeftIcon.png');
+
+    this.game.load.image('instructionsAD', 'images/instructions-AD.png');
+    this.game.load.image('instructionsS', 'images/instructions-S.png');
+    this.game.load.image('instructionsW', 'images/instructions-W.png');
+    this.game.load.image('instructionsSpace', 'images/instructions-spacebar.png');
+
     
     this.game.load.image('cloudyBackground', 'images/cloudyBg.png');
     this.game.load.image('grassBackground', 'images/bg-grass.png');
@@ -101,6 +108,7 @@ window.onload = function () {
   game.state.add('bossLevel', BossLevel);
   game.state.add('mainMenu', MainMenu);
   game.state.add('gameOver', GameOver);
+  game.state.add('instructionsScreen', InstructionsScreen);
 
   game.state.start('boot');
 };
